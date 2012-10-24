@@ -23,10 +23,7 @@ public class main {
 		Classifier b = new Baseline();
 		b.train(in);
 		Corpus res = b.classify(test);
-		Metric m = b.metrics(check);
-		m.printMetrics();
-		
-		
+
 		ConllWriter.write(res, "testout.txt");
 		
 		
