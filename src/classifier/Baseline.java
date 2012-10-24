@@ -35,19 +35,24 @@ public class Baseline implements Classifier {
 			for (Word w : s.words) {
 				for (Cue cue : w.cues) {
 
-					if (!cue.cue.equals("_")) {
+					//if (cue.cue.equals(w.word)) {
+					if (!cue.cue.equals("_") & cue.scope.equals("_")){
 						w.c = cue.cue;
-						if (cue.cue.equals("at")) {
+						if (cue.cue.equals("world")) {
 							System.out.println(w.toString());
 						}
 						// System.out.println(cue.cue + w.word);
-						lu.add(w.word);
+						lu.add(w.word.toLowerCase());
 						for (Cue cu : w.cues) {
 							// System.out.println(cu.toString());
 						}
 					}
 				}
 			}
+		}
+		System.out.println(lu.size());
+		for (String s : lu){
+			System.out.println(s);
 		}
 
 	}
@@ -95,7 +100,7 @@ public class Baseline implements Classifier {
 				//System.out.println(w.toString());
 			}
 		}
-		System.out.println(max);
+		
 		for (Word w : r.words) {
 			while (w.cues.size() < max) {
 				w.cues.add(new Cue("_", "_", "_"));
@@ -118,11 +123,13 @@ public class Baseline implements Classifier {
 		Word r = new Word(w.origin, w.sentenceID, w.tokenID, w.word, w.lemma,
 				w.pos, w.parseTree);
 
-		if (lu.contains(w.word)) {
+		if (lu.contains(w.word.toLowerCase())) {
 			Cue cu = new Cue(w.word, "_", "_");
 			r.cues.add(cu);
 			r.c = w.c;
 		}
+		
+		lu.remove("none");
 
 		return r;
 	}

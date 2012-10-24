@@ -15,6 +15,8 @@ public class main {
 	public static void main(String[] args) {
 		
 		Corpus in = ConllReader.read("train.txt");
+		
+		
 		Corpus test = ConllReader.read("test-NO_GOLD.txt");
 		Corpus check = ConllReader.read("test.txt");
 		
