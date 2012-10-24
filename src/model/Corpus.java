@@ -12,6 +12,9 @@ import java.util.List;
  */
 public class Corpus {
 	
+	//System.lineSeparator() requires jre 7
+	private String del = System.getProperty("line.separator");
+	
 	public List<Sentence> sentences;
 	String Name;
 	
@@ -26,7 +29,7 @@ public class Corpus {
 		
 		for (Sentence s : sentences){
 			// using lineSeperator may or may not be a good idea
-			r.append(s.toString() + System.lineSeparator());
+			r.append(s.toString() + del);
 		}
 		
 		return r.toString();

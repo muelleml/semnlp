@@ -12,7 +12,8 @@ import java.util.List;
  */
 public class Sentence {
 
-	private String del = System.lineSeparator();
+	//System.lineSeparator() requires jre 7
+	private String del = System.getProperty("line.separator");
 
 	String origin;
 
