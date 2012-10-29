@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class Sentence {
 
-	//System.lineSeparator() requires jre 7
+	// System.lineSeparator() requires jre 7
 	private String del = System.getProperty("line.separator");
 
 	String origin;
@@ -32,6 +32,25 @@ public class Sentence {
 		}
 
 		return sb.toString();
+	}
+
+	public void finalize() {
+		int max = 0;
+
+		for (Word w : words) {
+			if (w.cues.size() > max) {
+				max = w.cues.size();
+				//System.out.println(w.toString());
+			}
+		}
+		
+		for (Word w : words) {
+			while (w.cues.size() < max) {
+				w.cues.add(new Cue("_", "_", "_"));
+				//System.out.println(w.toString());
+				
+			}
+		}
 	}
 
 }

@@ -90,24 +90,10 @@ public class Baseline implements Classifier {
 
 		for (Word w : s.words) {
 			r.words.add(classify(w));
+			r.finalize();
 		}
 
-		int max = 0;
-
-		for (Word w : r.words) {
-			if (w.cues.size() > max) {
-				max = w.cues.size();
-				//System.out.println(w.toString());
-			}
-		}
 		
-		for (Word w : r.words) {
-			while (w.cues.size() < max) {
-				w.cues.add(new Cue("_", "_", "_"));
-				//System.out.println(w.toString());
-				
-			}
-		}
 		// System.out.println(max);
 
 		return r;
