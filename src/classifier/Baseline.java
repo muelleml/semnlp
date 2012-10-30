@@ -3,6 +3,8 @@
  */
 package classifier;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -19,6 +21,8 @@ public class Baseline implements Classifier {
 
 	private Set<String> lu = new TreeSet<String>();
 
+	private Set<String> singleCue = new TreeSet<String>();
+
 	private Corpus training, classif;
 
 	/*
@@ -32,28 +36,67 @@ public class Baseline implements Classifier {
 		training = c;
 
 		for (Sentence s : c.sentences) {
-			for (Word w : s.words) {
-				for (Cue cue : w.cues) {
 
-					//if (cue.cue.equals(w.word)) {
-					if (!cue.cue.equals("_") & cue.scope.equals("_")){
-						w.c = cue.cue;
-						if (cue.cue.equals("world")) {
-							System.out.println(w.toString());
-						}
-						// System.out.println(cue.cue + w.word);
-						lu.add(w.word.toLowerCase());
-						for (Cue cu : w.cues) {
-							// System.out.println(cu.toString());
-						}
+			List<Integer> cueList = new LinkedList<Integer>();
+
+			int max = s.words.get(0).cues.size();
+
+			int cueIndex = 0;
+
+			while (max > cueIndex) {
+
+				int cueLength = 0;
+
+				Cue cue;
+
+				for (Word w : s.words) {
+
+					cue = w.cues.get(cueIndex);
+
+					if (!cue.cue.equals("_")) {
+						cueLength++;
 					}
 				}
+
+				if (cueLength == 1) {
+					cueList.add(cueIndex);
+				}
+
+				cueIndex++;
+			}
+
+			for (Integer i : cueList) {
+				for (Word w : s.words) {
+					Cue cue = w.cues.get(i);
+					if (cue.cue.equals(w.word)) {
+						lu.add(cue.cue.toLowerCase());
+					}
+
+				}
+
 			}
 		}
-		System.out.println(lu.size());
-		for (String s : lu){
-			System.out.println(s);
-		}
+
+		/*
+		 * for (Word w : s.words) { for (Cue cue : w.cues) {
+		 * 
+		 * // if (cue.cue.equals(w.word)) { if (!cue.cue.equals("_") &
+		 * cue.scope.equals("_")) { w.c = cue.cue; if (cue.cue.equals("world"))
+		 * { System.out.println(w.toString()); } // System.out.println(cue.cue +
+		 * w.word); lu.add(w.word.toLowerCase()); for (Cue cu : w.cues) { //
+		 * System.out.println(cu.toString()); } } } } }
+		 * 
+		 * for (Sentence s : c.sentences) { for (Word w : s.words) { for (Cue
+		 * cue : w.cues) {
+		 * 
+		 * // if (cue.cue.equals(w.word)) { if (!cue.cue.equals("_") &
+		 * cue.scope.equals("_")) { w.c = cue.cue; if (cue.cue.equals("world"))
+		 * { System.out.println(w.toString()); } // System.out.println(cue.cue +
+		 * w.word); lu.add(w.word.toLowerCase()); for (Cue cu : w.cues) { //
+		 * System.out.println(cu.toString()); } } } } }
+		 * System.out.println(lu.size()); for (String s : lu) {
+		 * System.out.println(s); }
+		 */
 
 	}
 
@@ -88,13 +131,40 @@ public class Baseline implements Classifier {
 	public Sentence classify(Sentence s) {
 		Sentence r = new Sentence();
 
+		Word t;
+
+		int max = 0;
+
 		for (Word w : s.words) {
-			r.words.add(classify(w));
+			t = classify(w, max);
+			if (max < t.cues.size()) {
+				max = t.cues.size();
+			}
+			r.words.add(t);
 			r.finalize();
+			if (r.words.get(0).sentenceID.equals("43")) {
+				System.out.println(r.words.get(0).cues.size());
+			}
 		}
 
-		
 		// System.out.println(max);
+
+		return r;
+	}
+
+	private Word classify(Word w, int depth) {
+		Word r = classify(w);
+
+		if (r.cues.size() > 0) {
+			depth += 1;
+		}
+
+		while (r.cues.size() < depth) {
+
+			r.cues.add(0, new Cue("_", "_", "_"));
+			// System.out.println(w.toString());
+
+		}
 
 		return r;
 	}
@@ -114,7 +184,7 @@ public class Baseline implements Classifier {
 			r.cues.add(cu);
 			r.c = w.c;
 		}
-		
+
 		lu.remove("none");
 
 		return r;
@@ -139,9 +209,8 @@ public class Baseline implements Classifier {
 		for (int i = 0; i < nrSent; i++) {
 
 			for (int j = 0; j < check.sentences.get(i).words.size(); j++) {
-				//System.out.println(check.sentences.get(i).toString());
-				//System.out.println(check.sentences.get(i).toString());
-				
+				// System.out.println(check.sentences.get(i).toString());
+				// System.out.println(check.sentences.get(i).toString());
 
 				c1 = classif.sentences.get(i).words.get(j).c;
 				c2 = check.sentences.get(i).words.get(j).c;
