@@ -3,9 +3,8 @@
  */
 package io;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import model.Corpus;
@@ -21,15 +20,11 @@ public class ConllWriter {
 		File f = new File(fileName);
 
 		try {
-			FileWriter fw = new FileWriter(f);
-			BufferedWriter bw = new BufferedWriter(fw);
+			FileOutputStream fos = new FileOutputStream(f);
 
-			bw.write(c.toString());
+			fos.write(c.toString().getBytes());
 
-			bw.close();
-
-			fw.close();
-
+			fos.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

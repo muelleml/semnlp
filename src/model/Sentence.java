@@ -11,10 +11,6 @@ import java.util.List;
  * 
  */
 public class Sentence {
-
-	// System.lineSeparator() requires jre 7
-	private String del = System.getProperty("line.separator");
-
 	String origin;
 
 	public List<Word> words;
@@ -28,7 +24,7 @@ public class Sentence {
 		StringBuilder sb = new StringBuilder(100);
 
 		for (Word w : words) {
-			sb.append(w.toString() + del);
+			sb.append(w.toString() + "\n");
 		}
 
 		return sb.toString();
