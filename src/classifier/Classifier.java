@@ -19,10 +19,6 @@ public interface Classifier {
 
 	public Sentence classify(Sentence s);
 
-	public Word classify(Word w);
 	
-	
-		
-	public Metric metrics(Corpus check);
 
 }

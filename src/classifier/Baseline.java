@@ -77,26 +77,7 @@ public class Baseline implements Classifier {
 			}
 		}
 
-		/*
-		 * for (Word w : s.words) { for (Cue cue : w.cues) {
-		 * 
-		 * // if (cue.cue.equals(w.word)) { if (!cue.cue.equals("_") &
-		 * cue.scope.equals("_")) { w.c = cue.cue; if (cue.cue.equals("world"))
-		 * { System.out.println(w.toString()); } // System.out.println(cue.cue +
-		 * w.word); lu.add(w.word.toLowerCase()); for (Cue cu : w.cues) { //
-		 * System.out.println(cu.toString()); } } } } }
-		 * 
-		 * for (Sentence s : c.sentences) { for (Word w : s.words) { for (Cue
-		 * cue : w.cues) {
-		 * 
-		 * // if (cue.cue.equals(w.word)) { if (!cue.cue.equals("_") &
-		 * cue.scope.equals("_")) { w.c = cue.cue; if (cue.cue.equals("world"))
-		 * { System.out.println(w.toString()); } // System.out.println(cue.cue +
-		 * w.word); lu.add(w.word.toLowerCase()); for (Cue cu : w.cues) { //
-		 * System.out.println(cu.toString()); } } } } }
-		 * System.out.println(lu.size()); for (String s : lu) {
-		 * System.out.println(s); }
-		 */
+		System.out.println(lu.size());
 
 	}
 
@@ -142,9 +123,7 @@ public class Baseline implements Classifier {
 			}
 			r.words.add(t);
 			r.finalize();
-			if (r.words.get(0).sentenceID.equals("43")) {
-				System.out.println(r.words.get(0).cues.size());
-			}
+
 		}
 
 		// System.out.println(max);
@@ -169,12 +148,6 @@ public class Baseline implements Classifier {
 		return r;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see classifier.Classifier#classify(model.Word)
-	 */
-	@Override
 	public Word classify(Word w) {
 		Word r = new Word(w.origin, w.sentenceID, w.tokenID, w.word, w.lemma,
 				w.pos, w.parseTree);
@@ -182,7 +155,6 @@ public class Baseline implements Classifier {
 		if (lu.contains(w.word.toLowerCase())) {
 			Cue cu = new Cue(w.word, "_", "_");
 			r.cues.add(cu);
-			r.c = w.c;
 		}
 
 		lu.remove("none");
@@ -190,44 +162,4 @@ public class Baseline implements Classifier {
 		return r;
 	}
 
-	public Metric metrics(Corpus check) {
-
-		float tp = 0f;
-		float tn = 0f;
-		float fp = 0f;
-		float fn = 0f;
-
-		String c1;
-		String c2;
-
-		int nrSent = check.sentences.size();
-
-		if (check.sentences.size() > classif.sentences.size()) {
-			nrSent = classif.sentences.size();
-		}
-
-		for (int i = 0; i < nrSent; i++) {
-
-			for (int j = 0; j < check.sentences.get(i).words.size(); j++) {
-				// System.out.println(check.sentences.get(i).toString());
-				// System.out.println(check.sentences.get(i).toString());
-
-				c1 = classif.sentences.get(i).words.get(j).c;
-				c2 = check.sentences.get(i).words.get(j).c;
-
-				if (c1.equals("_") & c2.equals("_")) {
-					tn++;
-				} else if (!c1.equals("_") & !c2.equals("_")) {
-					tp++;
-				} else if (c1.equals("_") & !c2.equals("_")) {
-					fn++;
-				} else if (!c1.equals("_") & c2.equals("_")) {
-					fp++;
-				}
-			}
-
-		}
-
-		return new Metric(tp, tn, fp, fn);
-	}
 }

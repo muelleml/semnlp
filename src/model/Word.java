@@ -29,10 +29,6 @@ public class Word {
 	public String parseTree;
 
 	public List<Cue> cues = new LinkedList<Cue>();
-	
-	public String c = "";
-
-	boolean hasCues;
 
 	public Word() {
 

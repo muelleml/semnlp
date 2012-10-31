@@ -1,6 +1,5 @@
 import classifier.Baseline;
 import classifier.Classifier;
-import classifier.Metric;
 import io.ConllReader;
 import io.ConllWriter;
 import model.Corpus;
