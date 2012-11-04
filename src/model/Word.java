@@ -5,6 +5,7 @@ package model;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author muelleml
@@ -29,6 +30,8 @@ public class Word {
 	public String parseTree;
 
 	public List<Cue> cues = new LinkedList<Cue>();
+
+	public Node node;
 
 	public Word() {
 

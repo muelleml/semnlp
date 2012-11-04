@@ -10,6 +10,7 @@ import java.util.TreeSet;
 
 import model.Corpus;
 import model.Cue;
+import model.Node;
 import model.Sentence;
 import model.Word;
 
@@ -122,12 +123,36 @@ public class Baseline implements Classifier {
 				max = t.cues.size();
 			}
 			r.words.add(t);
-			
 
 		}
 
 		r.finalizeSent();
-		// System.out.println(max);
+		r.generateTree();
+
+		int cue = 0;
+
+		Set<String> targetNodePos = new TreeSet<String>();
+		targetNodePos.add("S");
+		targetNodePos.add("SBAR");
+
+		for (List<Cue> cl : r.verticalCues) {
+			int word = 0;
+			for (Cue c : cl) {
+
+				if (!c.cue.equals("_")) {
+
+					Word tword = r.words.get(word);
+					Node n = tword.node.findMother(targetNodePos);
+					if (n != null) {
+						addScope(n, cue);
+					}
+				}
+
+				word++;
+			}
+
+			cue++;
+		}
 
 		return r;
 	}
@@ -161,6 +186,22 @@ public class Baseline implements Classifier {
 		lu.remove("none");
 
 		return r;
+	}
+
+	private void addScope(Node n, int cueLevel) {
+
+		for (Node t : n.daughters) {
+
+			addScope(t, cueLevel);
+
+		}
+
+		if (n.daughters.isEmpty()) {
+
+			n.word.cues.get(cueLevel).scope = n.word.word;
+
+		}
+
 	}
 
 }
