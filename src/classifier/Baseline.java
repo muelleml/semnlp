@@ -122,10 +122,11 @@ public class Baseline implements Classifier {
 				max = t.cues.size();
 			}
 			r.words.add(t);
-			r.finalize();
+			
 
 		}
 
+		r.finalizeSent();
 		// System.out.println(max);
 
 		return r;
