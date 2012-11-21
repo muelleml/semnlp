@@ -1,0 +1,17 @@
+These files contain _only_ the sentences that contain some negation
+from the training set. Cues are marked as prefixes on the POS tags
+(e.g. Q1-, Q2- etc.). The associated scopes are marked on the surface
+forms as prefixes (e.g. all forms prefixed with Q1- are in scope of
+the cue Q1). The associated events are marked as suffixes on the
+surface forms (e.g. all forms suffixed with -E1 are events of the cue
+Q1).
+
+In order to make the parse trees readable by vpf, the surface forms
+and POS tags have been massaged slightly. Specifically, the tags
+'PRP$' and 'WP$' are replaced with 'PRPd' and 'WPh',
+respectively. Moreover, all ' (single-quotes) in tags and forms are
+replaced by backticks (`). Additionally, the surface forms (, ), [,
+and ] are replaced with -LRB-, -RRB-, -LSB-, and -RSB-, respectively.
+
+--
+ab 24/10-2012

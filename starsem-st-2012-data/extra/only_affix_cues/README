@@ -1,0 +1,6 @@
+These files are the training sets and dev sets from the shared task,
+stripped off of all cues except the affixal cues. This could be useful
+for either training or evaluation.
+
+--
+ab 14/11-2012
