@@ -2,6 +2,7 @@ import java.util.List;
 
 import classifier.Baseline;
 import classifier.Classifier;
+import classifier.DemClassifier;
 import io.ConllReader;
 import io.ConllWriter;
 import io.PartitionReader;
@@ -25,7 +26,10 @@ public class main {
 		//System.out.print(in.toString());
 		
 		Classifier b = new Baseline();
+		Classifier dem = new DemClassifier();
 		b.train(in);
+		dem.train(in);
+		dem.classify(test);
 		Corpus res = b.classify(test);
 
 		ConllWriter.write(res, "testout.txt");
