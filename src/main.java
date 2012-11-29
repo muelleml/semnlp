@@ -1,7 +1,10 @@
+import java.util.List;
+
 import classifier.Baseline;
 import classifier.Classifier;
 import io.ConllReader;
 import io.ConllWriter;
+import io.PartitionReader;
 import model.Corpus;
 import model.Sentence;
 import model.Word;
@@ -27,6 +30,8 @@ public class main {
 
 		ConllWriter.write(res, "testout.txt");
 		
+		List<Corpus> c = PartitionReader.readPartitionFolder("partitions");
+		System.out.println("#Partition: " + Integer.toString(c.size()));
 		
 		
 		for (Sentence s : in.sentences){
