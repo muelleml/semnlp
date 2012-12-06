@@ -22,7 +22,10 @@ public class POS implements Feature {
 	}
 
 	/**
+	 * Part Of Speech Tag
+	 * 
 	 * @param position
+	 *            The position relative to the given Word. 0 is the Word itself
 	 */
 	public POS(int position) {
 		this.position = position;
@@ -37,12 +40,17 @@ public class POS implements Feature {
 	public List<String> extract(Word w, Sentence s) {
 		List<String> r = new LinkedList<String>();
 
-		try {
-			int rel = s.words.indexOf(w);
+		int rel = s.words.indexOf(w);
+
+		// System.out.println(Integer.toString(position)+Integer.toString(rel)+Integer.toString(s.words.size()));
+
+		if (rel + position >= 0 && rel + position <= s.words.size() - 1) {
+
 			r.add(s.words.get(rel + position).pos);
-		} catch (Exception e) {
-			System.out.println("bugger!");
+		} else {
+			r.add("");
 		}
+
 		return r;
 	}
 
