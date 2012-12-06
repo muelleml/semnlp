@@ -7,6 +7,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 
 import model.Corpus;
 import model.Cue;
@@ -83,6 +85,20 @@ public class ConllReader {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+
+		// remove empty sentences
+
+		List<Sentence> rSentences = new LinkedList<Sentence>();
+
+		for (Sentence s : c.sentences) {
+			if (s.words.size() == 0) {
+				rSentences.add(s);
+			}
+		}
+
+		for (Sentence s : rSentences) {
+			c.sentences.remove(s);
 		}
 
 		return c;

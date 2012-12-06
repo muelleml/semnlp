@@ -22,7 +22,7 @@ public class ConllWriter {
 		try {
 			FileOutputStream fos = new FileOutputStream(f);
 
-			fos.write(c.toString().getBytes());
+			fos.write(c.toString().trim().getBytes());
 
 			fos.close();
 		} catch (IOException e) {
