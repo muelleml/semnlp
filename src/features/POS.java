@@ -40,9 +40,11 @@ public class POS implements Feature {
 	public List<String> extract(Word w, Sentence s) {
 		List<String> r = new LinkedList<String>();
 
-		int rel = s.words.indexOf(w);
+		int rel = getPosition(w, s);
 
-		// System.out.println(Integer.toString(position)+Integer.toString(rel)+Integer.toString(s.words.size()));
+		if (rel < 0) {
+			System.out.println("PANIC!");
+		}
 
 		if (rel + position >= 0 && rel + position <= s.words.size() - 1) {
 
@@ -52,6 +54,20 @@ public class POS implements Feature {
 		}
 
 		return r;
+	}
+	
+	private int getPosition(Word w, Sentence s){
+		int i = 0;
+		
+		for (Word tW : s.words){
+			
+			if (tW.tokenID == w.tokenID){
+				i = s.words.indexOf(tW);
+			}
+			
+		}
+		
+		return i;
 	}
 
 }
