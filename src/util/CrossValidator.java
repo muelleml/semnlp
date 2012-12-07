@@ -58,6 +58,16 @@ public class CrossValidator {
 	public static Metric CrossValidate(List<Corpus> partitions,
 			List<Corpus> cGold, int testPartitions, Classifier classifier) {
 		Metrics r = new Metrics();
+		
+		try {
+			classifier = classifier.getClass().newInstance();
+		} catch (InstantiationException e) {
+			System.out.println("Failed to instantiate new Classifier");
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			System.out.println("Failed to instantiate new Classifier");
+			e.printStackTrace();
+		}
 
 		if (1 > partitions.size() - testPartitions) {
 			System.out.println("not enough partitions for crossvalidation!");
@@ -70,6 +80,17 @@ public class CrossValidator {
 
 			for (int i = testPartitions; i <= partitions.size()
 					- testPartitions; i++) {
+				
+				try {
+					classifier = classifier.getClass().newInstance();
+				} catch (InstantiationException e) {
+					System.out.println("Failed to instantiate new Classifier");
+					e.printStackTrace();
+				} catch (IllegalAccessException e) {
+					System.out.println("Failed to instantiate new Classifier");
+					e.printStackTrace();
+				}
+
 
 				System.out.println("Crossvalidation run #"
 						+ Integer.toString(i));
@@ -114,8 +135,10 @@ public class CrossValidator {
 					}
 				}
 
+				System.out.println("Training with: " + classifier.getClass().getName());
 				classifier.train(train);
 
+				System.out.println("Classifying with: " + classifier.getClass().getName());
 				Corpus sys = classifier.classify(test);
 				Metric m = EvaluationReader.readScope(gold, sys);
 				r.addMetric(m);
