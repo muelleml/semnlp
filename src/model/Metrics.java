@@ -14,8 +14,23 @@ public class Metrics {
 
 	List<Metric> mList;
 
+	Metric macro;
+
+	Metric micro;
+
 	public Metrics() {
 		mList = new LinkedList<Metric>();
+		micro = new Metric();
+	}
+
+	/**
+	 * Add the MicroAverage Metric.
+	 * 
+	 * @param micro
+	 *            The MicroAverage Metric to add.
+	 */
+	public void addMicroAverage(Metric micro) {
+		this.micro = micro;
 	}
 
 	/**
@@ -104,5 +119,43 @@ public class Metrics {
 		}
 
 		return r;
+	}
+
+	/**
+	 * Get the MicroAverages
+	 * 
+	 * @return The micro average
+	 */
+	public Metric getMicroAverage() {
+		return micro;
+	}
+
+	/**
+	 * Get the MacroAverages
+	 * 
+	 * @return The macro average
+	 */
+	public Metric getMacroAverage() {
+		Metric r;
+		if (macro == null) {
+			r = averages();
+		} else {
+			r = macro;
+		}
+
+		return r;
+	}
+
+	public String toString() {
+		StringBuilder r = new StringBuilder();
+
+		r.append("The MacroAverages are:" + System.lineSeparator());
+		r.append(getMacroAverage().toString());
+		r.append(System.lineSeparator());
+		r.append("The MicroAverages are:"+System.lineSeparator());
+		r.append(getMicroAverage().toString());
+
+		return r.toString();
+
 	}
 }
