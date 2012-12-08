@@ -20,133 +20,93 @@ import model.Word;
 public class CrossValidator {
 
 	/**
-	 * Does CrossValidation on multiple Partitions
+	 * Does CrossValidation.
 	 * 
 	 * @param partitionFolder
-	 *            Folder where the test Partitions are
-	 * @param testPartitions
-	 *            # of Partitions to test on
+	 *            Folder containing the Partitions
 	 * @param classifier
 	 *            The Classifier Object to use
-	 * @return the average Metric
+	 * @return A Metrics Object containing both Micro and Macro averages
 	 */
-	public static Metric CrossValidate(String partitionFolder,
-			int testPartitions, Classifier classifier) {
-		List<Corpus> cList = PartitionReader
-				.readPartitionFolder(partitionFolder);
 
-		List<Corpus> cGold = PartitionReader
-				.readPartitionFolder(partitionFolder);
-
-		return CrossValidate(cList, cGold, testPartitions, classifier);
-	}
-
-	/**
-	 * Does CrossValidation on multiple Partitions
-	 * 
-	 * @param partitions
-	 *            The Partitions to use
-	 * @param cGold
-	 *            The Gold Partitions. This has to be the same as the test
-	 *            Partitions
-	 * @param testPartitions
-	 *            # of Partitions to test on
-	 * @param classifier
-	 *            The Classifier Object to use
-	 * @return the average Metric
-	 */
-	public static Metric CrossValidate(List<Corpus> partitions,
-			List<Corpus> cGold, int testPartitions, Classifier classifier) {
+	public static Metrics CrossValidate(String partitionFolder,
+			Classifier classifier) {
 		Metrics r = new Metrics();
-		
-		try {
-			classifier = classifier.getClass().newInstance();
-		} catch (InstantiationException e) {
-			System.out.println("Failed to instantiate new Classifier");
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			System.out.println("Failed to instantiate new Classifier");
-			e.printStackTrace();
-		}
 
-		if (1 > partitions.size() - testPartitions) {
-			System.out.println("not enough partitions for crossvalidation!");
-		} else {
+		List<Corpus> testPartitions = PartitionReader
+				.readPartitionFolder(partitionFolder);
 
-			List<Corpus> tBeg;
-			List<Corpus> tEnd;
-			List<Corpus> tTest;
-			List<Corpus> tGold;
+		List<Corpus> trainPartitions;
 
-			for (int i = testPartitions; i <= partitions.size()
-					- testPartitions; i++) {
-				
-				try {
-					classifier = classifier.getClass().newInstance();
-				} catch (InstantiationException e) {
-					System.out.println("Failed to instantiate new Classifier");
-					e.printStackTrace();
-				} catch (IllegalAccessException e) {
-					System.out.println("Failed to instantiate new Classifier");
-					e.printStackTrace();
+		int size = testPartitions.size();
+
+		Corpus microAverage = new Corpus();
+
+		Corpus test;
+
+		Corpus train;
+
+		Corpus classify;
+
+		for (int i = 0; i < size; i++) {
+
+			train = new Corpus();
+
+			classify = testPartitions.get(i);
+
+			trainPartitions = PartitionReader
+					.readPartitionFolder(partitionFolder);
+
+			test = trainPartitions.get(i);
+
+			trainPartitions.remove(test);
+
+			for (Corpus c : trainPartitions) {
+
+				for (Sentence s : c.sentences) {
+					train.sentences.add(s);
 				}
-
-
-				System.out.println("Crossvalidation run #"
-						+ Integer.toString(i));
-
-				// corpus thats used for training
-				Corpus train = new Corpus();
-				// corpus to classify
-				Corpus test = new Corpus();
-				// gold Corpus
-				Corpus gold = new Corpus();
-
-				tBeg = cGold.subList(0, i - 1);
-				tTest = partitions.subList(i - testPartitions, i);
-				tGold = cGold.subList(i - testPartitions, i);
-				tEnd = cGold.subList(i + 1, partitions.size());
-
-				List<Corpus> tTrain = new LinkedList<Corpus>();
-				tTrain.addAll(tBeg);
-				tTrain.addAll(tEnd);
-
-				// add cues and build training Corpus
-				for (Corpus c : tTrain) {
-					for (Sentence s : c.sentences) {
-						train.sentences.add(s);
-					}
-				}
-
-				// build Corpus to classify
-				for (Corpus c : tTest) {
-					for (Sentence s : c.sentences) {
-						for (Word w : s.words) {
-							w.cues = new LinkedList<Cue>();
-						}
-						test.sentences.add(s);
-					}
-				}
-
-				// build Gold Corpus
-				for (Corpus c : tGold) {
-					for (Sentence s : c.sentences) {
-						gold.sentences.add(s);
-					}
-				}
-
-				System.out.println("Training with: " + classifier.getClass().getName());
-				classifier.train(train);
-
-				System.out.println("Classifying with: " + classifier.getClass().getName());
-				Corpus sys = classifier.classify(test);
-				Metric m = EvaluationReader.readScope(gold, sys);
-				r.addMetric(m);
-
 			}
 
+			for (Sentence s : classify.sentences) {
+				for (Word w : s.words) {
+					w.cues = new LinkedList<Cue>();
+				}
+			}
+
+			System.out.println("Training with: "
+					+ classifier.getClass().getName());
+			classifier.train(train);
+
+			System.out.println("Classifying with: "
+					+ classifier.getClass().getName());
+			Corpus sys = classifier.classify(test);
+			Metric m = EvaluationReader.readScope(test, sys);
+			r.addMetric(m);
+
+			for (Sentence s : sys.sentences) {
+				microAverage.sentences.add(s);
+			}
+
+			System.out.println(m.toString());
+
 		}
 
-		return r.averages();
+		List<Corpus> tGold = PartitionReader
+				.readPartitionFolder(partitionFolder);
+
+		Corpus gold = new Corpus();
+
+		for (Corpus c : tGold) {
+
+			for (Sentence s : c.sentences) {
+				gold.sentences.add(s);
+			}
+		}
+
+		Metric m = EvaluationReader.readScope(gold, microAverage);
+		r.addMicroAverage(m);
+
+		return r;
 	}
 }
