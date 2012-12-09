@@ -11,6 +11,7 @@ import java.util.TreeSet;
 import features.Extractor;
 import features.Feature;
 import features.Lemma;
+import features.NGram;
 import features.POS;
 
 import malletwrap.ClassifyMalletMaxEnt;
@@ -28,22 +29,33 @@ import model.Word;
 public class DemClassifier implements Classifier {
 
 	// mallet trainers and classifiers
-	TrainMalletMaxEnt train = new TrainMalletMaxEnt();
+	TrainMalletMaxEnt train;
 	// initialize after training
 	ClassifyMalletMaxEnt classifier;
 
 	Extractor ex;
 	List<Feature> featureList;
 
-	private Set<String> lu = new TreeSet<String>();
+	private Set<String> lu;
 
-	private Set<String> singleCue = new TreeSet<String>();
+	private Set<String> affixCues;
 
-	private Set<String> affixCues = new TreeSet<String>();
+	Corpus classif, training;
 
-	private Corpus training, classif;
+	String nonAffixCue = "nonAffixCue";
 
-	public DemClassifier(){
+	public DemClassifier() {
+
+		// mallet trainers and classifiers
+		train = new TrainMalletMaxEnt();
+
+		// initialize after training
+
+		lu = new TreeSet<String>();
+
+		affixCues = new TreeSet<String>();
+
+		// configure the featureExtractor
 		ex = new Extractor();
 		featureList = new LinkedList<Feature>();
 		featureList.add(new POS());
@@ -53,7 +65,7 @@ public class DemClassifier implements Classifier {
 		featureList.add(new Lemma());
 		ex.addFeatures(featureList);
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -61,6 +73,30 @@ public class DemClassifier implements Classifier {
 	 */
 	@Override
 	public void train(Corpus c) {
+
+		// remove after testing:
+		// ----begin----
+		// mallet trainers and classifiers
+		train = new TrainMalletMaxEnt();
+
+		// initialize after training
+
+		lu = new TreeSet<String>();
+
+		affixCues = new TreeSet<String>();
+
+		// configure the featureExtractor
+		ex = new Extractor();
+		featureList = new LinkedList<Feature>();
+		featureList.add(new POS(0));
+		featureList.add(new POS(-1));
+		featureList.add(new POS(-2));
+		featureList.add(new POS(1));
+		featureList.add(new Lemma());
+		featureList.add(new NGram(1, 3, 4, true));
+		featureList.add(new NGram(1, 3, 5, false));
+		ex.addFeatures(featureList);
+		// ----end----
 
 		training = c;
 
@@ -100,24 +136,26 @@ public class DemClassifier implements Classifier {
 				for (Word w : s.words) {
 					Cue cue = w.cues.get(i);
 
+					// experiment! also in classifyWord
+					// train.addTrainingInstance(cue.cue, ex.extract(w, s));
+
 					if (cue.cue.equals(w.word)) {
 						lu.add(cue.cue.toLowerCase());
+						// train.addTrainingInstance(nonAffixCue, ex.extract(w,
+						// s));
 					} else if (!cue.cue.equals("_")) {
 						affixCues.add(cue.cue);
-						train.addTrainingInstance("TRUE", ex.extract(w, s));
-					} else {
-						train.addTrainingInstance("FALSE", ex.extract(w, s));
+						train.addTrainingInstance(cue.cue, ex.extract(w, s));
+
+					}
+
+					else {
+						train.addTrainingInstance(nonAffixCue, ex.extract(w, s));
 					}
 
 				}
 
 			}
-		}
-
-		System.out.println(lu.size());
-
-		for (String s : affixCues) {
-			System.out.println(s);
 		}
 
 		classifier = new ClassifyMalletMaxEnt(train.train());
@@ -132,7 +170,12 @@ public class DemClassifier implements Classifier {
 	public Corpus classify(Corpus c) {
 		classif = new Corpus();
 
+		int i = 0;
 		for (Sentence s : c.sentences) {
+			// System.out.println("classifying sentence #: " +
+			// Integer.toString(i));
+			i++;
+
 			classif.sentences.add(classify(s));
 
 		}
@@ -159,7 +202,7 @@ public class DemClassifier implements Classifier {
 		int max = 0;
 
 		for (Word w : s.words) {
-			t = classify(w, max);
+			t = classify(w, max, s);
 			if (max < t.cues.size()) {
 				max = t.cues.size();
 			}
@@ -198,8 +241,8 @@ public class DemClassifier implements Classifier {
 		return r;
 	}
 
-	private Word classify(Word w, int depth) {
-		Word r = classify(w);
+	private Word classify(Word w, int depth, Sentence s) {
+		Word r = classify(w, s);
 
 		if (r.cues.size() > 0) {
 			depth += 1;
@@ -215,24 +258,30 @@ public class DemClassifier implements Classifier {
 		return r;
 	}
 
-	public Word classify(Word w) {
-
-		List<String> features = new LinkedList<String>();
+	public Word classify(Word w, Sentence s) {
 
 		Word r = new Word(w.origin, w.sentenceID, w.tokenID, w.word, w.lemma,
 				w.pos, w.parseTree);
 
+		// experiment! also in train
+		/*
+		 * String c = classifier.classifyInstance(ex.extract(r, s)); if
+		 * (!c.equals("_")) { Cue cu = new Cue(c, "_", "_"); r.cues.add(cu); }
+		 */
+
+		Cue cu;
+
 		if (lu.contains(w.word.toLowerCase())) {
-			Cue cu = new Cue(w.word, "_", "_");
+			cu = new Cue(w.word, "_", "_");
 			r.cues.add(cu);
 		} else {
-			features.add(w.pos);
-			features.add(w.lemma);
-			String c = classifier.classifyInstance(features);
-			// System.out.println(c);
-			if (Boolean.parseBoolean(c)) {
-				System.out.println(w.toString());
+
+			String c = classifier.classifyInstance(ex.extract(r, s));
+			if (!c.equals(nonAffixCue)) {
+				cu = new Cue(c, "_", "_");
+				r.cues.add(cu);
 			}
+
 		}
 
 		return r;
