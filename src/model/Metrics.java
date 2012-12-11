@@ -12,6 +12,9 @@ import java.util.List;
  */
 public class Metrics {
 
+	// line separator
+	String lineSeparator = System.getProperty("line.separator");
+
 	List<Metric> mList;
 
 	Metric macro;
@@ -149,10 +152,10 @@ public class Metrics {
 	public String toString() {
 		StringBuilder r = new StringBuilder();
 
-		r.append("The MacroAverages are:" + System.lineSeparator());
+		r.append("The MacroAverages are:" + lineSeparator);
 		r.append(getMacroAverage().toString());
-		r.append(System.lineSeparator());
-		r.append("The MicroAverages are:"+System.lineSeparator());
+		r.append(lineSeparator);
+		r.append("The MicroAverages are:" + lineSeparator);
 		r.append(getMicroAverage().toString());
 
 		return r.toString();

@@ -12,6 +12,9 @@ public class Metric {
 	// delimiter
 	String del = "|";
 
+	// line separator
+	String lineSeparator = System.getProperty("line.separator");
+
 	// Cue Metrics
 	int cgold;
 	int csystem;
@@ -290,7 +293,7 @@ public class Metric {
 		r.append(del);
 		r.append(cf);
 
-		r.append(System.lineSeparator());
+		r.append(lineSeparator);
 
 		r.append("Scope tokens(no cue match)");
 		r.append(sgold);
