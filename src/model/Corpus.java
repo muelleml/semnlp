@@ -32,4 +32,8 @@ public class Corpus {
 		
 	}
 
+	public void addCorpus(Corpus corpus) {
+		sentences.addAll(corpus.sentences);
+	}
+
 }

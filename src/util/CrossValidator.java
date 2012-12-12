@@ -33,12 +33,11 @@ public class CrossValidator {
 			Classifier classifier) {
 		Metrics r = new Metrics();
 
-		List<Corpus> testPartitions = PartitionReader
-				.readPartitionFolder(partitionFolder);
+		Corpus[] testPartitions = PartitionReader.readPartitionFolder(partitionFolder);
 
-		List<Corpus> trainPartitions;
+		Corpus[] trainPartitions;
 
-		int size = testPartitions.size();
+		int size = testPartitions.length;
 
 		Corpus microAverage = new Corpus();
 
@@ -52,19 +51,18 @@ public class CrossValidator {
 
 			train = new Corpus();
 
-			classify = testPartitions.get(i);
+			classify = testPartitions[i];
 
 			trainPartitions = PartitionReader
 					.readPartitionFolder(partitionFolder);
+			test = trainPartitions[i];
 
-			test = trainPartitions.get(i);
-
-			trainPartitions.remove(test);
 
 			for (Corpus c : trainPartitions) {
-
-				for (Sentence s : c.sentences) {
-					train.sentences.add(s);
+				if(c != test) {
+					for (Sentence s : c.sentences) {
+						train.sentences.add(s);
+					}
 				}
 			}
 
@@ -92,8 +90,7 @@ public class CrossValidator {
 
 		}
 
-		List<Corpus> tGold = PartitionReader
-				.readPartitionFolder(partitionFolder);
+		Corpus[] tGold = PartitionReader.readPartitionFolder(partitionFolder);
 
 		Corpus gold = new Corpus();
 

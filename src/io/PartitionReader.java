@@ -8,6 +8,8 @@ import java.io.FilenameFilter;
 import java.util.LinkedList;
 import java.util.List;
 
+import util.SimpleFileNameFilter;
+
 import model.Corpus;
 
 /**
@@ -16,24 +18,16 @@ import model.Corpus;
  */
 public class PartitionReader {
 
-	public static List<Corpus> readPartitionFolder(String partFolder) {
-		List<Corpus> r = new LinkedList<Corpus>();
+	public static Corpus[] readPartitionFolder(String partFolder) {
+		File[] parts = new File(partFolder).listFiles(new SimpleFileNameFilter("txt"));
+		Corpus[] corpi = new Corpus[parts.length]; 
+		for (int i=0; i<parts.length; i++) {
 
-		File folder = new File(partFolder);
-
-		for (File f : folder.listFiles(new FilenameFilter() {
-
-			@Override
-			public boolean accept(File dir, String name) {
-				return name.toLowerCase().endsWith(".txt");
-			}
-		})) {
-
-			r.add(ConllReader.read(f.getAbsolutePath()));
+			corpi[i] = ConllReader.read(parts[i].getAbsolutePath());
 
 		}
 
-		return r;
+		return corpi;
 	}
 
 }

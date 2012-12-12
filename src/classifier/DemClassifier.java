@@ -40,42 +40,12 @@ public class DemClassifier implements Classifier {
 
 	private Set<String> affixCues;
 
-	Corpus classif, training;
+	Corpus classif;
 
 	String nonAffixCue = "nonAffixCue";
 
 	public DemClassifier() {
 
-		// mallet trainers and classifiers
-		train = new TrainMalletMaxEnt();
-
-		// initialize after training
-
-		lu = new TreeSet<String>();
-
-		affixCues = new TreeSet<String>();
-
-		// configure the featureExtractor
-		ex = new Extractor();
-		featureList = new LinkedList<Feature>();
-		featureList.add(new POS());
-		featureList.add(new POS(-1));
-		featureList.add(new POS(-2));
-		featureList.add(new POS(1));
-		featureList.add(new Lemma());
-		ex.addFeatures(featureList);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see classifier.Classifier#train(model.Corpus)
-	 */
-	@Override
-	public void train(Corpus c) {
-
-		// remove after testing:
-		// ----begin----
 		// mallet trainers and classifiers
 		train = new TrainMalletMaxEnt();
 
@@ -96,10 +66,19 @@ public class DemClassifier implements Classifier {
 		featureList.add(new NGram(1, 3, 4, true));
 		featureList.add(new NGram(1, 3, 5, false));
 		ex.addFeatures(featureList);
-		// ----end----
+		
+		train = new TrainMalletMaxEnt();
+		lu = new TreeSet<String>();
+		affixCues = new TreeSet<String>();
+	}
 
-		training = c;
-
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see classifier.Classifier#train(model.Corpus)
+	 */
+	@Override
+	public void train(Corpus c) {
 		for (Sentence s : c.sentences) {
 
 			List<Integer> cueList = new LinkedList<Integer>();
@@ -113,13 +92,9 @@ public class DemClassifier implements Classifier {
 			while (max > cueIndex) {
 
 				int cueLength = 0;
-
 				Cue cue;
-
 				for (Word w : s.words) {
-
 					cue = w.cues.get(cueIndex);
-
 					if (!cue.cue.equals("_")) {
 						cueLength++;
 					}
@@ -137,16 +112,12 @@ public class DemClassifier implements Classifier {
 					Cue cue = w.cues.get(i);
 
 					// experiment! also in classifyWord
-					// train.addTrainingInstance(cue.cue, ex.extract(w, s));
-
 					if (cue.cue.equals(w.word)) {
 						lu.add(cue.cue.toLowerCase());
-						// train.addTrainingInstance(nonAffixCue, ex.extract(w,
-						// s));
-					} else if (!cue.cue.equals("_")) {
+					} 
+					else if (!cue.cue.equals("_")) {
 						affixCues.add(cue.cue);
 						train.addTrainingInstance(cue.cue, ex.extract(w, s));
-
 					}
 
 					else {
@@ -170,18 +141,8 @@ public class DemClassifier implements Classifier {
 	public Corpus classify(Corpus c) {
 		classif = new Corpus();
 
-		int i = 0;
 		for (Sentence s : c.sentences) {
-			// System.out.println("classifying sentence #: " +
-			// Integer.toString(i));
-			i++;
-
 			classif.sentences.add(classify(s));
-
-		}
-
-		for (String s : lu) {
-			// System.out.println(s);
 		}
 
 		return classif;
@@ -189,8 +150,6 @@ public class DemClassifier implements Classifier {
 	}
 
 	/*
-	 * (non-Javadoc)
-	 * 
 	 * @see classifier.Classifier#classify(model.Sentence)
 	 */
 	@Override
