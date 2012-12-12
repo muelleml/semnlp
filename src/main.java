@@ -1,5 +1,7 @@
 import java.util.List;
 
+import util.Demo;
+
 import classifier.Baseline;
 import classifier.Classifier;
 import classifier.DemClassifier;
@@ -17,7 +19,9 @@ public class main {
 	 */
 	public static void main(String[] args) {
 		
-		Corpus in = ConllReader.read("train.txt");
+		Demo.Demo(new DemClassifier());
+		
+/*		Corpus in = ConllReader.read("train.txt");
 		
 		
 		Corpus test = ConllReader.read("test-NO_GOLD.txt");
@@ -43,7 +47,7 @@ public class main {
 				//System.out.println(w.cues.size());
 				
 			}
-		}
+		}*/
 	
 	}
 
