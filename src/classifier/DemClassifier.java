@@ -46,15 +46,6 @@ public class DemClassifier implements Classifier {
 
 	public DemClassifier() {
 
-		// mallet trainers and classifiers
-		train = new TrainMalletMaxEnt();
-
-		// initialize after training
-
-		lu = new TreeSet<String>();
-
-		affixCues = new TreeSet<String>();
-
 		// configure the featureExtractor
 		ex = new Extractor();
 		featureList = new LinkedList<Feature>();
@@ -66,10 +57,7 @@ public class DemClassifier implements Classifier {
 		featureList.add(new NGram(1, 3, 4, true));
 		featureList.add(new NGram(1, 3, 5, false));
 		ex.addFeatures(featureList);
-		
-		train = new TrainMalletMaxEnt();
-		lu = new TreeSet<String>();
-		affixCues = new TreeSet<String>();
+
 	}
 
 	/*
@@ -79,6 +67,12 @@ public class DemClassifier implements Classifier {
 	 */
 	@Override
 	public void train(Corpus c) {
+		
+		//unique with every training run
+		train = new TrainMalletMaxEnt();
+		lu = new TreeSet<String>();
+		affixCues = new TreeSet<String>();
+		
 		for (Sentence s : c.sentences) {
 
 			List<Integer> cueList = new LinkedList<Integer>();

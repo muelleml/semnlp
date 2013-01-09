@@ -24,7 +24,7 @@ public class ConllWriter {
 			String dir = parts[i];
 			path += dir + "/";
 			File temp = new File(path);
-			if(!temp.exists()) temp.createNewFile();
+			if(!temp.exists()) temp.mkdir();
 		}
 		
 		File f = new File(fileName);
