@@ -31,49 +31,36 @@ public class ConllReader {
 			FileReader fr = new FileReader(f);
 			BufferedReader br = new BufferedReader(fr);
 
-			String t = br.readLine();
 			Sentence s = new Sentence();
-			;
+			String line;
+			while ((line = br.readLine())!=null) {
 
-			while (t != null) {
+				String[] lineElements = line.trim().split("\\s");
 
-				String[] wl = t.trim().split("\\s");
-
-				// System.out.println(wl.length);
-
-				if (wl.length == 1) {
-					c.sentences.add(s);
+				if (lineElements.length == 1) {
+					if (s != null) c.sentences.add(s);
 
 					s = new Sentence();
 
-				} else {
+				}
+				else 
+				{
+					Word w = new Word(lineElements[0], lineElements[1], lineElements[2], lineElements[3], lineElements[4], lineElements[5],
+							lineElements[6]);
 
-					for (String ack : wl) {
-						// System.out.println(ack);
-					}
-
-					Word w = new Word(wl[0], wl[1], wl[2], wl[3], wl[4], wl[5],
-							wl[6]);
-
-					if (wl.length > 8) {
-						Cue cue;
-						for (int i = 0; wl.length > i * 3 + 7; i++) {
+					if (lineElements.length > 8) 
+					{
+						for (int i = 0; lineElements.length > i * 3 + 7; i++) 
+						{
 							int ti = 3 * i + 7;
-
-							// System.out.println(Integer.toString(ti) +
-							// wl.length);
-
-							cue = new Cue(wl[ti], wl[ti + 1], wl[ti + 2]);
-
-							w.cues.add(cue);
-
+							w.cues.add(new Cue(lineElements[ti], lineElements[ti + 1], lineElements[ti + 2]));
 						}
 					}
 
 					s.words.add(w);
 				}
 
-				t = br.readLine();
+				
 
 			}
 

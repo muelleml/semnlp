@@ -101,11 +101,8 @@ public class Sentence {
 				} else {
 
 					if (root == null) {
-						Node t = new Node(match, null, null);
-
-						root = t;
-
-						stack.add(t);
+						root = new Node(match, null, null);
+						stack.add(root);
 
 					} else {
 						Node t = new Node(match, stack.lastElement(), null);

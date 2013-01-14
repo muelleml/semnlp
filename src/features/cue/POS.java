@@ -1,7 +1,7 @@
 /**
  * 
  */
-package features;
+package features.cue;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -13,7 +13,7 @@ import model.Word;
  * @author muelleml
  * 
  */
-public class POS implements Feature {
+public class POS implements CueFeature {
 
 	int position;
 

@@ -3,24 +3,28 @@
  */
 package classifier;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import features.Extractor;
-import features.Feature;
-import features.Lemma;
-import features.NGram;
-import features.POS;
-
+import malletwrap.ClassifyMalletCRF;
 import malletwrap.ClassifyMalletMaxEnt;
+import malletwrap.TrainMalletCRF;
 import malletwrap.TrainMalletMaxEnt;
 import model.Corpus;
 import model.Cue;
-import model.Node;
 import model.Sentence;
 import model.Word;
+import features.cue.CueFeature;
+import features.cue.CueFeatureExtractor;
+import features.cue.Lemma;
+import features.cue.NGram;
+import features.cue.POS;
+import features.scope.POSSequence;
+import features.scope.ScopeFeatureExtractor;
+import features.scope.ScopeFeatureValue;
 
 /**
  * @author muelleml
@@ -29,12 +33,17 @@ import model.Word;
 public class DemClassifier implements Classifier {
 
 	// mallet trainers and classifiers
-	TrainMalletMaxEnt train;
+	TrainMalletMaxEnt cueDetector;
 	// initialize after training
-	ClassifyMalletMaxEnt classifier;
-
-	Extractor ex;
-	List<Feature> featureList;
+	ClassifyMalletMaxEnt cueClassifier;
+	
+	TrainMalletCRF scopeDetector;
+	ClassifyMalletCRF scopeClassifier;
+	
+	CueFeatureExtractor cueFeatureExtractor;
+	List<CueFeature> cueFeatureList;
+	
+	ScopeFeatureExtractor scopeFeatureExtractor;
 
 	private Set<String> lu;
 
@@ -47,17 +56,18 @@ public class DemClassifier implements Classifier {
 	public DemClassifier() {
 
 		// configure the featureExtractor
-		ex = new Extractor();
-		featureList = new LinkedList<Feature>();
-		featureList.add(new POS(0));
-		featureList.add(new POS(-1));
-		featureList.add(new POS(-2));
-		featureList.add(new POS(1));
-		featureList.add(new Lemma());
-		featureList.add(new NGram(1, 3, 4, true));
-		featureList.add(new NGram(1, 3, 5, false));
-		ex.addFeatures(featureList);
+		cueFeatureExtractor = new CueFeatureExtractor();
+		cueFeatureExtractor.addFeature(new POS(0));
+		cueFeatureExtractor.addFeature(new POS(-1));
+		cueFeatureExtractor.addFeature(new POS(-2));
+		cueFeatureExtractor.addFeature(new POS(1));
+		cueFeatureExtractor.addFeature(new Lemma());
+		cueFeatureExtractor.addFeature(new NGram(1, 3, 4, true));
+		cueFeatureExtractor.addFeature(new NGram(1, 3, 5, false));
 
+		scopeFeatureExtractor = new ScopeFeatureExtractor();
+		scopeFeatureExtractor.addFeature(new POSSequence());
+		
 	}
 
 	/*
@@ -69,12 +79,15 @@ public class DemClassifier implements Classifier {
 	public void train(Corpus c) {
 		
 		//unique with every training run
-		train = new TrainMalletMaxEnt();
+		cueDetector = new TrainMalletMaxEnt();
 		lu = new TreeSet<String>();
 		affixCues = new TreeSet<String>();
 		
+		scopeDetector = new TrainMalletCRF(5); // 5 for tests, 200 for real 
+		
+		
 		for (Sentence s : c.sentences) {
-
+			s.generateTree();
 			List<Integer> cueList = new LinkedList<Integer>();
 
 			int max = s.words.get(0).cues.size();
@@ -111,19 +124,23 @@ public class DemClassifier implements Classifier {
 					} 
 					else if (!cue.cue.equals("_")) {
 						affixCues.add(cue.cue);
-						train.addTrainingInstance(cue.cue, ex.extract(w, s));
+						cueDetector.addTrainingInstance(cue.cue, cueFeatureExtractor.extract(w, s));
 					}
 
 					else {
-						train.addTrainingInstance(nonAffixCue, ex.extract(w, s));
+						cueDetector.addTrainingInstance(nonAffixCue, cueFeatureExtractor.extract(w, s));
 					}
 
 				}
-
+			}
+			List<ScopeFeatureValue> sfvList = scopeFeatureExtractor.extractTraing(s);
+			for(ScopeFeatureValue sfv : sfvList) {
+				scopeDetector.addSequenceInstance(sfv.labels, sfv.features);
 			}
 		}
 
-		classifier = new ClassifyMalletMaxEnt(train.train());
+		cueClassifier = new ClassifyMalletMaxEnt(cueDetector.train());
+		scopeClassifier = new ClassifyMalletCRF(scopeDetector.train());
 	}
 
 	/*
@@ -166,29 +183,26 @@ public class DemClassifier implements Classifier {
 		r.finalizeSent();
 		r.generateTree();
 
-		int cue = 0;
-
-		Set<String> targetNodePos = new TreeSet<String>();
-		targetNodePos.add("S");
-		targetNodePos.add("SBAR");
-
-		for (List<Cue> cl : r.verticalCues) {
-			int word = 0;
-			for (Cue c : cl) {
-
-				if (!c.cue.equals("_")) {
-
-					Word tword = r.words.get(word);
-					Node n = tword.node.findMother(targetNodePos);
-					if (n != null) {
-						addScope(n, cue);
+		List<String> labels = scopeClassifier.predictSequence(scopeFeatureExtractor.extractClassif(s));
+		int cueIndex = 0;
+		Iterator<String> labelIt = labels.iterator();
+		String recentLabel = "";
+		for(Word w : s.words) {
+			if(cueIndex >= w.cues.size()) {
+				if(labelIt.hasNext())  {
+					String label = labelIt.next();
+					
+					if(label == "B" || label == "I") {
+						w.cues.get(cueIndex).scope = w.lemma;
 					}
+					else if(recentLabel == "B" || recentLabel == "I") {
+						cueIndex += 1;
+					}
+					
 				}
-
-				word++;
+				else break;
+				
 			}
-
-			cue++;
 		}
 
 		return r;
@@ -229,7 +243,7 @@ public class DemClassifier implements Classifier {
 			r.cues.add(cu);
 		} else {
 
-			String c = classifier.classifyInstance(ex.extract(r, s));
+			String c = cueClassifier.classifyInstance(cueFeatureExtractor.extract(r, s));
 			if (!c.equals(nonAffixCue)) {
 				cu = new Cue(c, "_", "_");
 				r.cues.add(cu);
@@ -239,21 +253,4 @@ public class DemClassifier implements Classifier {
 
 		return r;
 	}
-
-	private void addScope(Node n, int cueLevel) {
-
-		for (Node t : n.daughters) {
-
-			addScope(t, cueLevel);
-
-		}
-
-		if (n.daughters.isEmpty()) {
-
-			n.word.cues.get(cueLevel).scope = n.word.word;
-
-		}
-
-	}
-
 }

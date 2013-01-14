@@ -1,7 +1,7 @@
 /**
  * 
  */
-package features;
+package features.cue;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -17,13 +17,12 @@ import model.Word;
  * @author muelleml
  * 
  */
-public class NGram implements Feature {
+public class NGram implements CueFeature {
 
 	private int min;
 	private int max;
 	private int length;
 	private boolean direction;
-	private int rel;
 
 	/**
 	 * Extracts N-Grams from a Word. Missing Characters will be filled with
@@ -48,7 +47,6 @@ public class NGram implements Feature {
 		this.max = max;
 		this.length = length;
 		this.direction = direction;
-		this.rel = 0;
 	}
 
 	/*
@@ -59,7 +57,6 @@ public class NGram implements Feature {
 	@Override
 	public List<String> extract(Word w, Sentence s) {
 
-		List<String> r = new LinkedList<String>();
 		StringBuilder sb = new StringBuilder(w.word);
 
 		// reversal
@@ -100,20 +97,6 @@ public class NGram implements Feature {
 
 		return r;
 
-	}
-
-	private int getPosition(Word w, Sentence s) {
-		int i = 0;
-
-		for (Word tW : s.words) {
-
-			if (tW.tokenID == w.tokenID) {
-				i = s.words.indexOf(tW);
-			}
-
-		}
-
-		return i;
 	}
 
 }
