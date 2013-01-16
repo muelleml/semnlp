@@ -3,9 +3,6 @@
  */
 package classifier;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -27,7 +24,6 @@ import features.cue.Lemma;
 import features.cue.NGram;
 import features.cue.POS;
 import features.scope.POSSequence;
-import features.scope.POSTreePath;
 import features.scope.ScopeFeatureExtractor;
 import features.scope.ScopeFeatureValue;
 
@@ -71,7 +67,7 @@ public class DemClassifier implements Classifier {
 		cueFeatureExtractor.addFeature(new NGram(1, 3, 5, false));
 
 		scopeFeatureExtractor = new ScopeFeatureExtractor();
-		scopeFeatureExtractor.addFeature(new POSSequence());
+		scopeFeatureExtractor.addFeature(new POSSequence(2));
 //		scopeFeatureExtractor.addFeature(new POSTreePath());
 		
 		
@@ -90,7 +86,7 @@ public class DemClassifier implements Classifier {
 		lu = new TreeSet<String>();
 		affixCues = new TreeSet<String>();
 		
-		scopeDetector = new TrainMalletCRF(50);
+		scopeDetector = new TrainMalletCRF(20);
 		
 		for (Sentence s : c.sentences) {
 			List<Integer> cueList = new LinkedList<Integer>();
@@ -194,20 +190,24 @@ public class DemClassifier implements Classifier {
 		String recentLabel = "";
 		for(Word w : r.words) {
 			if(cueIndex < w.cues.size()) {
-				if(w.cues.get(cueIndex).cue == "_") {
+				
 					if(labelIt.hasNext())  {
 						String label = labelIt.next();
-						
+						if(w.cues.get(cueIndex).cue == "_") {		
 						if(label == "B" || label == "I") {
 							w.cues.get(cueIndex).scope = w.lemma;
-							Application.out.println("Found Scope. Sentence: " + w.origin + ", " + w.sentenceID + "; Lemma " + w.lemma + "; Cue " + w.cues.get(cueIndex));
+							Application.out.println(w);
 						}
 						else if(recentLabel == "B" || recentLabel == "I") {
 							cueIndex += 1;
 						}
 					}
-					else break;
+					else {
+						Application.out.println(w);
+					}
 				}
+				else break;
+				
 				
 			}
 		}

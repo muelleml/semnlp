@@ -36,7 +36,9 @@ public class ScopeFeatureExtractor {
 		List<ScopeFeatureValue> r = new LinkedList<ScopeFeatureValue>();
 		
 		for (ScopeFeature f : features){
-			r.add(f.extractTrain(s));
+			for(ScopeFeatureValue sfv : f.extractTrain(s)) {
+				r.add(sfv);
+			}
 		}
 		return r;
 	}
