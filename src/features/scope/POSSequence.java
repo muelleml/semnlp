@@ -90,14 +90,18 @@ public class POSSequence implements ScopeFeature {
 		Iterator<List<String>> wlIt = sentenceList.iterator();
 		int sIndex = 0;
 		for(Word w :s.words) {
-			List<List<String>> temp = new LinkedList<List<String>>();
 			List<String> wordList = wlIt.next();
 			int i = 0;
 			for(Cue c : w.cues) {
 				int cueIndex = cueIndices[i];
+				// Hier stehen wieder die POS tags
 				List<String> cueWordList = new LinkedList<String>(wordList);
+				// Cue Diff Index reinschreiben
 				cueWordList.add(0, "index:" + (sIndex-cueIndex));
-				temp.add(cueWordList);
+				// Evt. neue Value Liste anlegen
+				if(value.get(i) == null) value.set(i, new LinkedList<List<String>>());
+				// Liste für dieses Wort in die Liste für diese Cue packen
+				value.get(i).add(cueWordList);
 				i++;
 			}
 			sIndex++;
