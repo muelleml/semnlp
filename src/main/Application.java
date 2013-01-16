@@ -21,25 +21,28 @@ public class Application {
 	 * @throws InterruptedException 
 	 * @throws IOException 
 	 */
+	public static PrintStream out;
 	public static void main(final String[] args) throws InterruptedException, IOException {
 		if(args.length != 2) {
 			throw new RuntimeException("Usage: semnlp <input-dir> <output-dir>");
 		}
-		
-		System.setOut(new PrintStream(new OutputStream() {
-			
-			@Override
-			public void write(int arg0) throws IOException {
-				
-			}
-		}));
-		System.setErr(new PrintStream(new OutputStream() {
-			
-			@Override
-			public void write(int arg0) throws IOException {
-				
-			}
-		}));
+		out = System.out;
+
+//		System.setOut(new PrintStream(new OutputStream() {
+//			
+//			@Override
+//			public void write(int arg0) throws IOException {
+//				
+//			}
+//		}));
+//
+//		System.setErr(new PrintStream(new OutputStream() {
+//			
+//			@Override
+//			public void write(int arg0) throws IOException {
+//				
+//			}
+//		}));
 
 		final Corpus[] corpi = PartitionReader.readPartitionFolder(args[0]);
 		final Corpus[] result = new Corpus[corpi.length+1];

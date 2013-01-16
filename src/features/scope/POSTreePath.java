@@ -8,36 +8,36 @@ import model.Node;
 import model.Sentence;
 import model.Word;
 
-public class POSSequence implements ScopeFeature {
+public class POSTreePath implements ScopeFeature {
 
 	@Override
 	public ScopeFeatureValue extractTrain(Sentence s) {
 		ScopeFeatureValue value = new ScopeFeatureValue();
-		String[] recentScope = null;
+		String recentScope = "_";
 		for(Word w : s.words) {
-			if(recentScope == null) {
-				recentScope = new String[w.cues.size()];
-				for(int i=0; i<recentScope.length; i++) recentScope[i] = "_";
-			}
 			String label = null;
-			int i = 0;
 			for(Cue cue : w.cues) {
 				if(cue.scope != "_") 
 				{
-					if(recentScope[i] == "_") {
+					if(recentScope == "_") {
 						label = "B";
 					}
 					else label = "I";
 					break;
 				}
 
-				recentScope[i] = cue.scope;
-				i++;
+				recentScope = cue.scope;
 			}
 			if(label == null)label = "O";
 			value.labels.add(label);
+
+			LinkedList<String> list = new LinkedList<String>();
+			for(Node node = w.node; node != null; node = node.mother) {
+				list.add(node.pos);
+			}
+			
+			value.features.add(list);
 		}
-		value.features = extractClassif(s);
 		return value;
 	}
 
@@ -46,18 +46,12 @@ public class POSSequence implements ScopeFeature {
 		List<List<String>> value = new LinkedList<List<String>>();
 		for(Word w : s.words) {
 			LinkedList<String> list = new LinkedList<String>();
-			Node mother = w.node.mother;
-			if(mother.mother != null) {
-				mother = mother.mother;
-			}
-			for(Node d1 : mother.daughters) {
-				list.add(d1.pos);
-				for(Node d2 : d1.daughters) {
-					list.add(d2.pos);
-				}
+			for(Node node = w.node; node != null; node = node.mother) {
+				list.add(node.pos);
 			}
 			value.add(list);
 		}
 		return value;
 	}
+
 }

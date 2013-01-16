@@ -3,12 +3,16 @@
  */
 package classifier;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import main.Application;
 import malletwrap.ClassifyMalletCRF;
 import malletwrap.ClassifyMalletMaxEnt;
 import malletwrap.TrainMalletCRF;
@@ -23,6 +27,7 @@ import features.cue.Lemma;
 import features.cue.NGram;
 import features.cue.POS;
 import features.scope.POSSequence;
+import features.scope.POSTreePath;
 import features.scope.ScopeFeatureExtractor;
 import features.scope.ScopeFeatureValue;
 
@@ -67,6 +72,8 @@ public class DemClassifier implements Classifier {
 
 		scopeFeatureExtractor = new ScopeFeatureExtractor();
 		scopeFeatureExtractor.addFeature(new POSSequence());
+//		scopeFeatureExtractor.addFeature(new POSTreePath());
+		
 		
 	}
 
@@ -83,8 +90,7 @@ public class DemClassifier implements Classifier {
 		lu = new TreeSet<String>();
 		affixCues = new TreeSet<String>();
 		
-		scopeDetector = new TrainMalletCRF(5); // 5 for tests, 200 for real 
-		
+		scopeDetector = new TrainMalletCRF(50);
 		
 		for (Sentence s : c.sentences) {
 			List<Integer> cueList = new LinkedList<Integer>();
@@ -194,6 +200,7 @@ public class DemClassifier implements Classifier {
 						
 						if(label == "B" || label == "I") {
 							w.cues.get(cueIndex).scope = w.lemma;
+							Application.out.println("Found Scope. Sentence: " + w.origin + ", " + w.sentenceID + "; Lemma " + w.lemma + "; Cue " + w.cues.get(cueIndex));
 						}
 						else if(recentLabel == "B" || recentLabel == "I") {
 							cueIndex += 1;

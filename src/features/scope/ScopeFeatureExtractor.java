@@ -3,11 +3,11 @@
  */
 package features.scope;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 import model.Sentence;
-import model.Word;
 
 /**
  * @author eckebrpk
@@ -38,7 +38,6 @@ public class ScopeFeatureExtractor {
 		for (ScopeFeature f : features){
 			r.add(f.extractTrain(s));
 		}
-		
 		return r;
 	}
 	public List<List<String>> extractClassif(Sentence s){
