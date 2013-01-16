@@ -87,7 +87,6 @@ public class DemClassifier implements Classifier {
 		
 		
 		for (Sentence s : c.sentences) {
-			s.generateTree();
 			List<Integer> cueList = new LinkedList<Integer>();
 
 			int max = s.words.get(0).cues.size();
@@ -183,24 +182,25 @@ public class DemClassifier implements Classifier {
 		r.finalizeSent();
 		r.generateTree();
 
-		List<String> labels = scopeClassifier.predictSequence(scopeFeatureExtractor.extractClassif(s));
+		List<String> labels = scopeClassifier.predictSequence(scopeFeatureExtractor.extractClassif(r));
 		int cueIndex = 0;
 		Iterator<String> labelIt = labels.iterator();
 		String recentLabel = "";
-		for(Word w : s.words) {
-			if(cueIndex >= w.cues.size()) {
-				if(labelIt.hasNext())  {
-					String label = labelIt.next();
-					
-					if(label == "B" || label == "I") {
-						w.cues.get(cueIndex).scope = w.lemma;
+		for(Word w : r.words) {
+			if(cueIndex < w.cues.size()) {
+				if(w.cues.get(cueIndex).cue == "_") {
+					if(labelIt.hasNext())  {
+						String label = labelIt.next();
+						
+						if(label == "B" || label == "I") {
+							w.cues.get(cueIndex).scope = w.lemma;
+						}
+						else if(recentLabel == "B" || recentLabel == "I") {
+							cueIndex += 1;
+						}
 					}
-					else if(recentLabel == "B" || recentLabel == "I") {
-						cueIndex += 1;
-					}
-					
+					else break;
 				}
-				else break;
 				
 			}
 		}

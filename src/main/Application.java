@@ -2,11 +2,15 @@ package main;
 import io.ConllWriter;
 import io.PartitionReader;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.concurrent.Semaphore;
 
 import model.Corpus;
+import model.Cue;
+import model.Sentence;
+import model.Word;
 import classifier.Classifier;
 import classifier.DemClassifier;
 
@@ -21,6 +25,21 @@ public class Application {
 		if(args.length != 2) {
 			throw new RuntimeException("Usage: semnlp <input-dir> <output-dir>");
 		}
+		
+		System.setOut(new PrintStream(new OutputStream() {
+			
+			@Override
+			public void write(int arg0) throws IOException {
+				
+			}
+		}));
+		System.setErr(new PrintStream(new OutputStream() {
+			
+			@Override
+			public void write(int arg0) throws IOException {
+				
+			}
+		}));
 
 		final Corpus[] corpi = PartitionReader.readPartitionFolder(args[0]);
 		final Corpus[] result = new Corpus[corpi.length+1];
@@ -41,6 +60,17 @@ public class Application {
 					}
 					dem.train(train);
 					result[run+1] = dem.classify(corpi[run]);
+
+//					for(Sentence s : result[run+1].sentences) {
+//						for(Word w : s.words){ 
+//							for(Cue c : w.cues){
+//								if(c.scope != "_") {
+//									c.toString();
+//								}
+//							}
+//						}
+//					}
+					
 					mutex.release();
 				}
 			}).start();

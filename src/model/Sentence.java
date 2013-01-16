@@ -72,15 +72,14 @@ public class Sentence {
 
 	public void generateTree() {
 		Stack<Node> stack = new Stack<Node>();
-
+		Node root = null;
 		Pattern p = Pattern.compile("[\\w]+|[(]|[)]|[*]");
 
 		String open = "(";
 		String close = ")";
 		String asterisk = "*";
-
 		for (Word w : words) {
-
+			
 			Matcher m = p.matcher(w.parseTree);
 
 			while (m.find()) {
@@ -111,8 +110,7 @@ public class Sentence {
 					}
 				}
 			}
-
 		}
-
+		this.root = root;
 	}
 }

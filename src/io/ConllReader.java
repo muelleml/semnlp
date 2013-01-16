@@ -38,7 +38,10 @@ public class ConllReader {
 				String[] lineElements = line.trim().split("\\s");
 
 				if (lineElements.length == 1) {
-					if (s != null) c.sentences.add(s);
+					if (s != null) {
+						s.generateTree();
+						c.sentences.add(s);
+					}
 
 					s = new Sentence();
 
@@ -63,9 +66,10 @@ public class ConllReader {
 				
 
 			}
-
-			c.sentences.add(s);
-
+			if(s != null) {
+				s.generateTree();
+				c.sentences.add(s);
+			}
 			br.close();
 			fr.close();
 
