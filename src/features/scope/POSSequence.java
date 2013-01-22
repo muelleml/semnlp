@@ -1,5 +1,6 @@
 package features.scope;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -21,29 +22,30 @@ public class POSSequence implements ScopeFeature {
 		ScopeFeatureValue[] value = null;
 		String[] recentScope = null;
 		
+		ArrayList<List<List<String>>> features = extractClassif(s);
+		
 		for(Word w : s.words) {
-			List<List<String>> features = extractClassif(s);
+			
 			if(recentScope == null) {
 				recentScope = new String[w.cues.size()];
 				value = new ScopeFeatureValue[w.cues.size()];
 				for(int i=0; i<recentScope.length; i++){
 					recentScope[i] = "_";
 					value[i] = new ScopeFeatureValue();
-					value[i].features = features;
+					value[i].features = features.get(i);
 				}
 			}
 
 			int i = 0;
 			for(Cue cue : w.cues) {
-				if(cue.scope != "_") 
+				if(!cue.scope.equals("_")) 
 				{
-					if(recentScope[i] == "_") {
+					if(recentScope[i].equals("_")) {
 						value[i].labels.add("B");
 					}
 					else {
 						value[i].labels.add("I");
 					}
-					break;
 				}
 				else value[i].labels.add("O");
 
@@ -56,8 +58,9 @@ public class POSSequence implements ScopeFeature {
 	}
 
 	@Override
-	public List<List<String>> extractClassif(Sentence s) {
-		List<List<String>> value =  null;
+	public ArrayList<List<List<String>>> extractClassif(Sentence s) {
+		ArrayList<List<List<String>>> value =  null;
+		
 		int[] cueIndices = null;
 		// Feature Liste eines Satzes
 		List<List<String>> sentenceList = new LinkedList<List<String>>();
@@ -65,7 +68,7 @@ public class POSSequence implements ScopeFeature {
 		int wordIndex = 0;
 		for(Word w : s.words) {
 			if(value == null) {
-				value = new LinkedList<List<String>>();
+				value = new ArrayList<List<List<String>>>(w.cues.size());
 				cueIndices = new int[w.cues.size()];
 			}
 			// Feature Liste eines Wortes
@@ -93,16 +96,15 @@ public class POSSequence implements ScopeFeature {
 		int sIndex = 0;
 		for(Word w :s.words) {
 			List<String> wordList = wlIt.next();
-			int i = 0;
-			for(Cue c : w.cues) {
+			for(int i = 0; i<w.cues.size(); i++) {
 				int cueIndex = cueIndices[i];
 				// Hier stehen wieder die POS tags
 				List<String> cueWordList = new LinkedList<String>(wordList);
 				// Cue Diff Index reinschreiben
 				cueWordList.add(0, "index:" + (sIndex-cueIndex));
 				// Liste für dieses Wort in die Liste für diese Cue packen
-				value.add(cueWordList);
-				i++;
+				while(value.size() <= i) value.add(new LinkedList<List<String>>());
+				value.get(i).add(cueWordList);
 			}
 			sIndex++;
 		}

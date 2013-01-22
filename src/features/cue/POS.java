@@ -61,7 +61,7 @@ public class POS implements CueFeature {
 		
 		for (Word tW : s.words){
 			
-			if (tW.tokenID == w.tokenID){
+			if (tW.tokenID.equals(w.tokenID)){
 				i = s.words.indexOf(tW);
 			}
 			

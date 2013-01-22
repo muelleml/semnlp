@@ -4,10 +4,6 @@
 package io;
 
 import java.io.File;
-import java.io.FilenameFilter;
-import java.util.LinkedList;
-import java.util.List;
-
 import util.SimpleFileNameFilter;
 
 import model.Corpus;

@@ -4,8 +4,6 @@
 package model;
 
 import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
 
 /**
  * @author muelleml
@@ -22,13 +20,11 @@ public class Word {
 	public String lemma;
 	public String pos;
 	public String parseTree;
-	public List<Cue> cues = new LinkedList<Cue>();
+	public LinkedList<Cue> cues = new LinkedList<Cue>();
 	public Node node;
 
 	public Word() {
-
 	}
-
 
 	public Word(String origin, String sentenceID, String tokenID, String word,
 			String lemma, String pos, String parseTree) {
@@ -41,22 +37,6 @@ public class Word {
 		this.parseTree = parseTree;
 	}
 
-	public Word(Word base) {
-		// Deep Copy
-		this.origin = base.origin;
-		this.sentenceID = base.sentenceID;
-		this.tokenID = base.tokenID;
-		this.word = base.word;
-		this.lemma = base.lemma;
-		this.pos = base.pos;
-		this.parseTree = base.parseTree;
-		if(base.cues != null) {
-			this.cues = new LinkedList<Cue>();
-			for(Cue c : base.cues) this.cues.add(new Cue(c));
-		}
-		this.node = new Node(base.node);
-	}
-	
 	@Override
 	public String toString() {
 		String appendix;

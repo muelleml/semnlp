@@ -42,11 +42,13 @@ public class ScopeFeatureExtractor {
 		}
 		return r;
 	}
-	public List<List<String>> extractClassif(Sentence s){
-		List<List<String>> r = new LinkedList<List<String>>();
+	public ArrayList<List<List<String>>> extractClassif(Sentence s){
+		ArrayList<List<List<String>>> r = new ArrayList<List<List<String>>>();
 		
 		for (ScopeFeature f : features){
-			r.addAll(f.extractClassif(s));
+			for(List<List<String>> item : f.extractClassif(s)) {
+				r.add(item);
+			}
 		}
 		
 		return r;

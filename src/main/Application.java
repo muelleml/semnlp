@@ -3,15 +3,10 @@ import io.ConllWriter;
 import io.PartitionReader;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.concurrent.Semaphore;
 
 import model.Corpus;
-import model.Cue;
-import model.Sentence;
-import model.Word;
-import classifier.Classifier;
 import classifier.Classifier;
 
 public class Application {
@@ -28,52 +23,56 @@ public class Application {
 		}
 		out = System.out;
 
-//		System.setOut(new PrintStream(new OutputStream() {
-//			
-//			@Override
-//			public void write(int arg0) throws IOException {
-//				
-//			}
-//		}));
-//
-//		System.setErr(new PrintStream(new OutputStream() {
-//			
-//			@Override
-//			public void write(int arg0) throws IOException {
-//				
-//			}
-//		}));
+		//		System.setOut(new PrintStream(new OutputStream() {
+		//			
+		//			@Override
+		//			public void write(int arg0) throws IOException {
+		//				
+		//			}
+		//		}));
+		//
+		//		System.setErr(new PrintStream(new OutputStream() {
+		//			
+		//			@Override
+		//			public void write(int arg0) throws IOException {
+		//				
+		//			}
+		//		}));
 
 		final Corpus[] corpi = PartitionReader.readPartitionFolder(args[0]);
 		final Corpus[] result = new Corpus[corpi.length+1];
 		result[0] = new Corpus();
 		final Semaphore mutex = new Semaphore(0);
-		
+
 		for(int r = 0; r < corpi.length; r++) {
 			final int run = r; 
 			new Thread(new Runnable() {
-				
+
 				@Override
 				public void run() {
-
-					Classifier classifier = new Classifier();
-					Corpus train = new Corpus();
-					for(int i=0; i<corpi.length; i++) {
-						if(i!=run) train.addCorpus(corpi[i]);
+					try {
+						Classifier classifier = new Classifier();
+						Corpus train = new Corpus();
+						for(int i=0; i<corpi.length; i++) {
+							if(i!=run)
+								train.addCorpus(corpi[i]);
+						}
+						classifier.train(train);
+						result[run+1] = classifier.classify(corpi[run]);
 					}
-					classifier.train(train);
-					result[run+1] = classifier.classify(corpi[run]);
+					catch(InterruptedException e) {
+						e.printStackTrace();
+					}
+					//					for(Sentence s : result[run+1].sentences) {
+					//						for(Word w : s.words){ 
+					//							for(Cue c : w.cues){
+					//								if(c.scope != "_") {
+					//									c.toString();
+					//								}
+					//							}
+					//						}
+					//					}
 
-//					for(Sentence s : result[run+1].sentences) {
-//						for(Word w : s.words){ 
-//							for(Cue c : w.cues){
-//								if(c.scope != "_") {
-//									c.toString();
-//								}
-//							}
-//						}
-//					}
-					
 					mutex.release();
 				}
 			}).start();

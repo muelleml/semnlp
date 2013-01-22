@@ -25,13 +25,6 @@ public class Cue {
 		
 	}
 	
-	public Cue(Cue base) {
-		// Deep Copy
-		this.cue = base.cue;
-		this.scope = base.scope;
-		this.event = base.event;
-	}
-
 	@Override
 	public String toString(){
 		return cue + del + scope + del + event + del;

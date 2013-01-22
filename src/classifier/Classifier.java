@@ -30,7 +30,7 @@ public class Classifier {
 		scopeClassif.train(c);
 	}
 
-	public Corpus classify(Corpus c) {
+	public Corpus classify(Corpus c) throws InterruptedException {
 		classif = new Corpus();
 
 		for (Sentence s : c.sentences) {
@@ -41,15 +41,14 @@ public class Classifier {
 
 	}
 
-	public Sentence classify(Sentence sentence) {
-		Sentence response = new Sentence(sentence);
-		cueClassif.classify(response);
+	public Sentence classify(Sentence sentence) throws InterruptedException {
+		cueClassif.classify(sentence);
 		
-		response.finalizeSent();
-		response.generateTree();
+		sentence.finalizeSent();
+		sentence.generateTree();
 		
-		scopeClassif.classify(response);
+		scopeClassif.classify(sentence);
 
-		return response;
+		return sentence;
 	}
 }

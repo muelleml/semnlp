@@ -14,15 +14,11 @@ import java.util.Set;
 public class Node {
 
 	public String pos = "";
-
 	public Node mother;
-
 	public List<Node> daughters = new LinkedList<Node>();
-
 	public Word word;
 
 	public Node() {
-
 	}
 
 	/**
@@ -35,11 +31,6 @@ public class Node {
 		this.mother = mother;
 		this.word = word;
 	}
-	
-	public Node(Node root) {
-		// TODO Auto-generated constructor stub
-	}
-
 
 	public Node findMother(Set<String> m){
 		Node r = null;

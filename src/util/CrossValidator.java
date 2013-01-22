@@ -1,14 +1,9 @@
 package util;
 
-import io.PartitionReader;
 import io.EvaluationReader;
+import io.PartitionReader;
 
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import classifier.Classifier;
 
 import model.Corpus;
 import model.Cue;
@@ -16,6 +11,7 @@ import model.Metric;
 import model.Metrics;
 import model.Sentence;
 import model.Word;
+import classifier.Classifier;
 
 public class CrossValidator {
 
@@ -27,10 +23,11 @@ public class CrossValidator {
 	 * @param classifier
 	 *            The Classifier Object to use
 	 * @return A Metrics Object containing both Micro and Macro averages
+	 * @throws InterruptedException 
 	 */
 
 	public static Metrics CrossValidate(String partitionFolder,
-			Classifier classifier) {
+			Classifier classifier) throws InterruptedException {
 		Metrics r = new Metrics();
 
 		Corpus[] testPartitions = PartitionReader.readPartitionFolder(partitionFolder);

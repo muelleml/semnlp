@@ -113,12 +113,12 @@ public class Metrics {
 			}
 
 			r.addCueMetric(cgold / size, csystem / size, ctp / size,
-					cfp / size, cfn / size, cprec / (float) size, crec
-							/ (float) size, cf / (float) size);
+					cfp / size, cfn / size, cprec / size, crec
+							/ size, cf / size);
 
 			r.addScopeMetric(sgold / size, ssystem / size, stp / size, sfp
-					/ size, sfn / size, sprec / (float) size, srec
-					/ (float) size, sf / (float) size);
+					/ size, sfn / size, sprec / size, srec
+					/ size, sf / size);
 		}
 
 		return r;
@@ -149,6 +149,7 @@ public class Metrics {
 		return r;
 	}
 
+	@Override
 	public String toString() {
 		StringBuilder r = new StringBuilder();
 

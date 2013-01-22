@@ -18,6 +18,7 @@ public class Corpus {
 		 sentences = new LinkedList<Sentence>();
 	}
 	
+	@Override
 	public String toString(){
 		
 		// TODO determine optimal Size for initialization

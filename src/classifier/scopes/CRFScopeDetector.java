@@ -1,5 +1,6 @@
 package classifier.scopes;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -27,7 +28,7 @@ public class CRFScopeDetector implements ScopeClassifier {
 
 	@Override
 	public void train(Corpus c) {
-		scopeDetector = new TrainMalletCRF(5); // 5 for tests, 200 for real 
+		scopeDetector = new TrainMalletCRF(200); // 5 for tests, 200 for real 
 
 		for (Sentence s : c.sentences) {
 			List<ScopeFeatureValue> sfvList = scopeFeatureExtractor.extractTraing(s);
@@ -40,25 +41,22 @@ public class CRFScopeDetector implements ScopeClassifier {
 
 	@Override
 	public void classify(Sentence sentence) {
-		List<String> labels = scopeClassifier.predictSequence(scopeFeatureExtractor.extractClassif(sentence));
-		int cueIndex = 0;
-		Iterator<String> labelIt = labels.iterator();
-		String recentLabel = "";
-		for(Word w : sentence.words) {
-			if(cueIndex >= w.cues.size()) {
+		ArrayList<List<List<String>>> values = scopeFeatureExtractor.extractClassif(sentence);
+		for(int cueIndex = 0; cueIndex < values.size(); cueIndex++) {
+			List<List<String>> valueItem = values.get(cueIndex);
+			List<String> labels = scopeClassifier.predictSequence(valueItem);
+			
+			Iterator<String> labelIt = labels.iterator();
+			for(Word w : sentence.words) {
 				if(labelIt.hasNext())  {
 					String label = labelIt.next();
 					
 					if(label == "B" || label == "I") {
 						w.cues.get(cueIndex).scope = w.lemma;
 					}
-					else if(recentLabel == "B" || recentLabel == "I") {
-						cueIndex += 1;
-					}
 					
 				}
 				else break;
-				
 			}
 		}
 	}

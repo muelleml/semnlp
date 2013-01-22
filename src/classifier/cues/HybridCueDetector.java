@@ -49,7 +49,6 @@ public class HybridCueDetector implements CueClassifier {
 		affixCues = new TreeSet<String>();
 
 		for (Sentence s : c.sentences) {
-			s.generateTree();
 			List<Integer> cueList = new LinkedList<Integer>();
 
 			int max = s.words.get(0).cues.size();
@@ -101,47 +100,30 @@ public class HybridCueDetector implements CueClassifier {
 
 	@Override
 	public void classify(Sentence sentence) {
-
-		int max = 0;
-
+		int cueCount = 0;
 		for (Word word : sentence.words) {
-			int depth = max;
+			Cue cu = null;
 
-			// experiment! also in train
-			/*
-			 * String c = classifier.classifyInstance(ex.extract(r, s)); if
-			 * (!c.equals("_")) { Cue cu = new Cue(c, "_", "_"); r.cues.add(cu); }
-			 */
-
-			Cue cu;
-
+			word.cues.clear();
+			
+			for(int i=0; i<cueCount; i++)
+			{
+				word.cues.add(new Cue("_", "_", "_"));
+			}
+			
 			if (lu.contains(word.word.toLowerCase())) {
 				cu = new Cue(word.word, "_", "_");
-				word.cues.add(cu);
-			} else {
-
+			}
+			else {
 				String c = cueClassifier.classifyInstance(cueFeatureExtractor.extract(word, sentence));
 				if (!c.equals(nonAffixCue)) {
 					cu = new Cue(c, "_", "_");
-					word.cues.add(cu);
 				}
-
 			}
 
-
-			if (word.cues.size() > 0) {
-				depth += 1;
-			}
-
-			while (word.cues.size() < depth) {
-
-				word.cues.add(0, new Cue("_", "_", "_"));
-				// System.out.println(w.toString());
-
-			}
-			
-			if (max < word.cues.size()) {
-				max = word.cues.size();
+			if (cu != null) {
+				cueCount += 1;
+				word.cues.add(cu);
 			}
 		}
 	}

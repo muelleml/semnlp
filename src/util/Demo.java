@@ -9,7 +9,7 @@ import classifier.Classifier;
 
 public class Demo {
 
-	public static void Demo(Classifier classifier) {
+	public static void DoDemo(Classifier classifier) throws InterruptedException {
 		String partitions = "partitions";
 		String partitionsOnlyAffixes = "partitions/onlyAffixes";
 
