@@ -25,6 +25,22 @@ public class Sentence {
 		words = new LinkedList<Word>();
 	}
 
+	public Sentence(Sentence base) {
+		// Deep Copy
+		this.origin = base.origin;
+		this.root = new Node(base.root);
+		this.words = new LinkedList<Word>();
+		for(Word w : base.words)this.words.add(new Word(w)); 
+		if(base.verticalCues != null) {
+			this.verticalCues = new LinkedList<List<Cue>>();
+			for(List<Cue> list : base.verticalCues) {
+				List<Cue> temp = new LinkedList<Cue>();
+				for(Cue c : list) temp.add(new Cue(c));
+				this.verticalCues.add(temp);
+			}
+		}
+	}
+
 	public String toString() {
 
 		StringBuilder sb = new StringBuilder(100);
@@ -72,14 +88,15 @@ public class Sentence {
 
 	public void generateTree() {
 		Stack<Node> stack = new Stack<Node>();
-		Node root = null;
+
 		Pattern p = Pattern.compile("[\\w]+|[(]|[)]|[*]");
 
 		String open = "(";
 		String close = ")";
 		String asterisk = "*";
+
 		for (Word w : words) {
-			
+
 			Matcher m = p.matcher(w.parseTree);
 
 			while (m.find()) {
@@ -110,7 +127,8 @@ public class Sentence {
 					}
 				}
 			}
+
 		}
-		this.root = root;
+
 	}
 }

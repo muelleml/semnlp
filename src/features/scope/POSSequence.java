@@ -16,7 +16,7 @@ public class POSSequence implements ScopeFeature {
 	public POSSequence(int range) {
 		this.range = range;
 	}
-	
+
 	@Override
 	public ScopeFeatureValue[] extractTrain(Sentence s) {
 		ScopeFeatureValue[] value = null;
@@ -57,8 +57,8 @@ public class POSSequence implements ScopeFeature {
 	}
 
 	@Override
-	public ArrayList<List<List<String>>> extractClassif(Sentence s) {
-		ArrayList<List<List<String>>> value =  null;
+	public List<List<String>> extractClassif(Sentence s) {
+		List<List<String>> value =  null;
 		int[] cueIndices = null;
 		// Feature Liste eines Satzes
 		List<List<String>> sentenceList = new LinkedList<List<String>>();
@@ -66,15 +66,18 @@ public class POSSequence implements ScopeFeature {
 		int wordIndex = 0;
 		for(Word w : s.words) {
 			if(value == null) {
-				value = new ArrayList<List<List<String>>>(w.cues.size());
+				value = new LinkedList<List<String>>();
 				cueIndices = new int[w.cues.size()];
 			}
 			// Feature Liste eines Wortes
 			List<String> wordList = new LinkedList<String>();
 			
 			// Index of Cue in Sentence speichern
-			for(int i=0; i<w.cues.size(); i++) if(w.cues.get(i).cue != "_") {
-				cueIndices[i] = wordIndex;
+			for(int i=0; i<w.cues.size(); i++)
+			{
+				if(w.cues.get(i).cue != "_") {
+					cueIndices[i] = wordIndex;
+				}
 			}
 			
 			for(int i=-range; i<range; i++) {
@@ -98,10 +101,8 @@ public class POSSequence implements ScopeFeature {
 				List<String> cueWordList = new LinkedList<String>(wordList);
 				// Cue Diff Index reinschreiben
 				cueWordList.add(0, "index:" + (sIndex-cueIndex));
-				// Evt. neue Value Liste anlegen
-				if(value.get(i) == null) value.set(i, new LinkedList<List<String>>());
 				// Liste für dieses Wort in die Liste für diese Cue packen
-				value.get(i).add(cueWordList);
+				value.add(cueWordList);
 				i++;
 			}
 			sIndex++;

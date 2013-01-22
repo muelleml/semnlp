@@ -36,6 +36,11 @@ public class Node {
 		this.word = word;
 	}
 	
+	public Node(Node root) {
+		// TODO Auto-generated constructor stub
+	}
+
+
 	public Node findMother(Set<String> m){
 		Node r = null;
 		

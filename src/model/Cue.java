@@ -9,16 +9,13 @@ package model;
  */
 public class Cue {
 	
-	private String del = "\t";
+	final static String del = "\t";
 
 	public String cue;
-	
 	public String scope;
-	
 	public String event;
 	
 	public Cue(String cue, String scope, String event) {
-		super();
 		this.cue = cue;
 		this.scope = scope;
 		this.event = event;
@@ -28,10 +25,16 @@ public class Cue {
 		
 	}
 	
+	public Cue(Cue base) {
+		// Deep Copy
+		this.cue = base.cue;
+		this.scope = base.scope;
+		this.event = base.event;
+	}
+
+	@Override
 	public String toString(){
-		
 		return cue + del + scope + del + event + del;
-		
 	}
 	
 }
