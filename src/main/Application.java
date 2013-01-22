@@ -12,7 +12,7 @@ import model.Cue;
 import model.Sentence;
 import model.Word;
 import classifier.Classifier;
-import classifier.DemClassifier;
+import classifier.Classifier;
 
 public class Application {
 
@@ -56,13 +56,13 @@ public class Application {
 				@Override
 				public void run() {
 
-					Classifier dem = new DemClassifier();
+					Classifier classifier = new Classifier();
 					Corpus train = new Corpus();
 					for(int i=0; i<corpi.length; i++) {
 						if(i!=run) train.addCorpus(corpi[i]);
 					}
-					dem.train(train);
-					result[run+1] = dem.classify(corpi[run]);
+					classifier.train(train);
+					result[run+1] = classifier.classify(corpi[run]);
 
 //					for(Sentence s : result[run+1].sentences) {
 //						for(Word w : s.words){ 
