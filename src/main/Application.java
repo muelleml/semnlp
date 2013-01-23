@@ -8,6 +8,7 @@ import java.util.concurrent.Semaphore;
 
 import model.Corpus;
 import classifier.Classifier;
+import classifier.scopes.Baseline;
 
 public class Application {
 
@@ -102,6 +103,8 @@ public class Application {
 		}).start();
 
 		mutex.acquire(corpi.length+1);
+		
+		System.out.println("Baseline used True: " + Baseline.FooTrue + "; False: " + Baseline.FooFalse);
 	}
 
 }

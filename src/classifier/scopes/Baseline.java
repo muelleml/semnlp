@@ -14,6 +14,9 @@ import features.scope.ScopeFeatureValue;
 
 public class Baseline implements ScopeFeature {
 
+	public static int FooTrue = 0;
+	public static int FooFalse = 0;
+	
 	static final String trueString = "Baseline:True";
 	static final String falseString = "Baseline:False";
 	@Override
@@ -64,12 +67,12 @@ public class Baseline implements ScopeFeature {
 					@Override
 					public boolean selectChild(Node child) {
 						if(child.word == null) return false;
-						else if(!child.word.cues.get(citemp).equals("_")) return true;
-						else return false;
+						else return child.word.cues.get(citemp).equals("_");
 					}
 				});
-				if(cueNode==null) item.add(falseString);
-				else item.add(trueString);
+				
+				if(cueNode==null){ FooFalse+=1; item.add(falseString); }
+				else { FooTrue += 1; item.add(trueString); }
 				
 				value.get(ci).add(item);
 			}

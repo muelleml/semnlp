@@ -23,7 +23,7 @@ public class CRFScopeDetector implements ScopeClassifier {
 
 	public CRFScopeDetector() {
 		scopeFeatureExtractor = new ScopeFeatureExtractor();
-		scopeFeatureExtractor.addFeature(new POSSequence(5));
+		//scopeFeatureExtractor.addFeature(new POSSequence(5));
 		scopeFeatureExtractor.addFeature(new Baseline());
 	}
 
