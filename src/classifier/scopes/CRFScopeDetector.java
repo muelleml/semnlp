@@ -23,12 +23,13 @@ public class CRFScopeDetector implements ScopeClassifier {
 
 	public CRFScopeDetector() {
 		scopeFeatureExtractor = new ScopeFeatureExtractor();
-		scopeFeatureExtractor.addFeature(new POSSequence(2));
+		scopeFeatureExtractor.addFeature(new POSSequence(5));
+		scopeFeatureExtractor.addFeature(new Baseline());
 	}
 
 	@Override
 	public void train(Corpus c) {
-		scopeDetector = new TrainMalletCRF(200); // 5 for tests, 200 for real 
+		scopeDetector = new TrainMalletCRF(200); 
 
 		for (Sentence s : c.sentences) {
 			List<ScopeFeatureValue> sfvList = scopeFeatureExtractor.extractTraing(s);

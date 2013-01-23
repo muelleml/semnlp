@@ -13,6 +13,10 @@ import java.util.Set;
  */
 public class Node {
 
+	public interface ChildSelector {
+		public boolean selectChild(Node child);
+	}
+
 	public String pos = "";
 	public Node mother;
 	public List<Node> daughters = new LinkedList<Node>();
@@ -42,10 +46,23 @@ public class Node {
 		else if (mother != null) {
 			r = mother.findMother(m);
 		}
-		
-		
+		else r = this;
 		
 		return r;
+	}
+
+	public Node findChild(ChildSelector childSelector) {
+		if(childSelector.selectChild(this)) {
+			return this;
+		}
+		else {
+			Node node = null;
+			for(Node child : daughters) {
+				node = child.findChild(childSelector);
+				if(node != null) return node;
+			}
+			return null;
+		}
 	}
 
 }

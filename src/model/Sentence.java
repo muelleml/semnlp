@@ -45,7 +45,7 @@ public class Sentence {
 	 * Word or Cue.
 	 */
 	@SuppressWarnings("unchecked")
-	public void finalizeSent() throws InterruptedException {
+	public void ensureFinalized() throws InterruptedException {
 		mutex.acquire();
 
 		if(!finalized) {

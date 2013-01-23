@@ -86,6 +86,9 @@ public class POSSequence implements ScopeFeature {
 				if(wordIndex+i > 0 && wordIndex+i < s.words.size()) {
 					wordList.add("pos" + i + ":" + s.words.get(wordIndex+i).pos);
 				}
+				else {
+					wordList.add("pos" + i + ":NULL");
+				}
 			}
 			sentenceList.add(wordList);
 			wordIndex++;

@@ -6,8 +6,10 @@ package classifier;
 import model.Corpus;
 import model.Sentence;
 import classifier.cues.CueClassifier;
+import classifier.cues.GoldCueDetector;
 import classifier.cues.HybridCueDetector;
 import classifier.scopes.CRFScopeDetector;
+import classifier.scopes.GoldScopeDetector;
 import classifier.scopes.ScopeClassifier;
 
 /**
@@ -21,8 +23,10 @@ public class Classifier {
 	ScopeClassifier scopeClassif;
 	
 	public Classifier() {
-		cueClassif = new HybridCueDetector();
-		scopeClassif = new CRFScopeDetector();
+		//cueClassif = new HybridCueDetector();
+		//scopeClassif = new CRFScopeDetector();
+		cueClassif = new GoldCueDetector();
+		scopeClassif = new GoldScopeDetector();
 	}
 
 	public void train(Corpus c) {
@@ -44,7 +48,7 @@ public class Classifier {
 	public Sentence classify(Sentence sentence) throws InterruptedException {
 		cueClassif.classify(sentence);
 		
-		sentence.finalizeSent();
+		sentence.ensureFinalized();
 		sentence.generateTree();
 		
 		scopeClassif.classify(sentence);
