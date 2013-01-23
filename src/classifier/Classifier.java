@@ -24,9 +24,8 @@ public class Classifier {
 	
 	public Classifier() {
 		//cueClassif = new HybridCueDetector();
-		//scopeClassif = new CRFScopeDetector();
+		scopeClassif = new CRFScopeDetector();
 		cueClassif = new GoldCueDetector();
-		scopeClassif = new GoldScopeDetector();
 	}
 
 	public void train(Corpus c) {
