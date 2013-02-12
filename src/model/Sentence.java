@@ -30,6 +30,16 @@ public class Sentence {
 		mutex = new Semaphore(1);
 	}
 
+	public Sentence(Sentence s) {
+		this.finalized = false;
+		this.generatedTree = false;
+		this.mutex = new Semaphore(1);
+		this.words = new LinkedList<Word>();
+		for(Word w : s.words) {
+			this.words.add(new Word(w));
+		}
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder(100);

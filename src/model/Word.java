@@ -37,6 +37,20 @@ public class Word {
 		this.parseTree = parseTree;
 	}
 
+	public Word(Word w) {
+		this.origin = new String(w.origin);
+		this.sentenceID = new String(w.sentenceID);
+		this.tokenID = new String(w.tokenID);
+		this.word = new String(w.word);
+		this.lemma = new String(w.lemma);
+		this.pos = new String(w.pos);
+		this.parseTree = new String(w.parseTree);
+		for(Cue c : w.cues)
+		{
+			this.cues.add(new Cue(c));
+		}
+	}
+
 	@Override
 	public String toString() {
 		String appendix;

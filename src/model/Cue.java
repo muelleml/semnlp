@@ -20,11 +20,12 @@ public class Cue {
 		this.scope = scope;
 		this.event = event;
 	}
-
-	public Cue(){
-		
+	public Cue(Cue c) {
+			this.cue = new String(c.cue);
+			this.scope = new String(c.scope);
+			this.event = new String(c.event);
 	}
-	
+
 	@Override
 	public String toString(){
 		return cue + del + scope + del + event + del;

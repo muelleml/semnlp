@@ -6,10 +6,8 @@ package classifier;
 import model.Corpus;
 import model.Sentence;
 import classifier.cues.CueClassifier;
-import classifier.cues.GoldCueDetector;
 import classifier.cues.HybridCueDetector;
 import classifier.scopes.CRFScopeDetector;
-import classifier.scopes.GoldScopeDetector;
 import classifier.scopes.ScopeClassifier;
 
 /**
@@ -23,9 +21,9 @@ public class Classifier {
 	ScopeClassifier scopeClassif;
 	
 	public Classifier() {
-		//cueClassif = new HybridCueDetector();
+		cueClassif = new HybridCueDetector();
+		//cueClassif = new GoldCueDetector();
 		scopeClassif = new CRFScopeDetector();
-		cueClassif = new GoldCueDetector();
 	}
 
 	public void train(Corpus c) {

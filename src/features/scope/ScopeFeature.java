@@ -7,6 +7,5 @@ import model.Sentence;
 
 public interface ScopeFeature {
 
-	public ScopeFeatureValue[] extractTrain(Sentence s);
 	public ArrayList<List<List<String>>> extractClassif(Sentence s);
 }

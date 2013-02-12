@@ -35,6 +35,11 @@ public class Corpus {
 
 	public void addCorpus(Corpus corpus) {
 		sentences.addAll(corpus.sentences);
+		for(Sentence s : corpus.sentences) {
+			this.sentences.add(new Sentence(s));
+		}
+		if(Name == null) Name = corpus.Name;
+		else Name += corpus.Name;
 	}
 
 }
