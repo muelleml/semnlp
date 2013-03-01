@@ -16,7 +16,7 @@ public class Node {
 	public interface ChildSelector {
 		public boolean selectChild(Node child);
 	}
-
+	
 	public String pos = "";
 	public Node mother;
 	public List<Node> daughters = new LinkedList<Node>();
@@ -36,19 +36,17 @@ public class Node {
 		this.word = word;
 	}
 
-	public Node findMother(Set<String> m){
-		Node r = null;
-		
-		
-		if (m.contains(pos)){
-			r = this;
+	/**
+	 * @returns Mother-Node with a PoS-Tag in searchPos (or null) 
+	 **/
+	public Node findMother(Set<String> searchPos){
+		if (searchPos.contains(pos)){
+			return this;
 		}
 		else if (mother != null) {
-			r = mother.findMother(m);
+			return mother.findMother(searchPos);
 		}
-		else r = this;
-		
-		return r;
+		else return null;
 	}
 
 	public Node findChild(ChildSelector childSelector) {
@@ -63,6 +61,14 @@ public class Node {
 			}
 			return null;
 		}
+	}
+
+	public Node findRoot()
+	{
+		if (mother != null) {
+			return mother.findRoot();
+		}
+		else return this;
 	}
 
 }

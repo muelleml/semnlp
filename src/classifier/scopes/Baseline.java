@@ -34,7 +34,7 @@ public class Baseline implements ScopeFeature {
 				List<String> word = new LinkedList<String>();
 				sentence.add(word);
 				Node mother = w.node.findMother(new ArraySet<String>(new String[] { "S", "SBar" }));
-				
+				if(mother == null) mother = w.node.findRoot();
 				
 					Node cueNode = mother.findChild(new Node.ChildSelector() {
 					
