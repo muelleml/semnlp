@@ -11,70 +11,83 @@ import model.Corpus;
 import model.Cue;
 import model.Sentence;
 import model.Word;
+import features.scope.Baseline;
 import features.scope.POSHead;
 import features.scope.POSSequence;
 import features.scope.ScopeFeatureExtractor;
 
+/**
+ * @author: Patrik Eckebrecht
+ **/
 public class CRFScopeDetector implements ScopeClassifier {
-final static int CRFIterationCount = 200;
-final static int POSRange = 4;
-	
-	
-	TrainMalletCRF scopeDetector;
+	int CRFIterationCount;
+	boolean reverted;
 	ClassifyMalletCRF scopeClassifier;
-
-
 	ScopeFeatureExtractor scopeFeatureExtractor;
 
-	public CRFScopeDetector() {
+	public CRFScopeDetector(String featureSpec, int crfIterations, boolean reverted)
+	{
 		scopeFeatureExtractor = new ScopeFeatureExtractor();
-		scopeFeatureExtractor.addFeature(new POSSequence(POSRange));
-		scopeFeatureExtractor.addFeature(new POSHead(0, 1, 2, 3, 4));
-		scopeFeatureExtractor.addFeature(new Baseline());
+		String[] specs = featureSpec.split("\\+");
+		for(String spec : specs) {
+			switch(spec.substring(0,6)) {
+			case "posseq": 
+				scopeFeatureExtractor.addFeature(new POSSequence(Integer.parseInt(spec.substring(spec.indexOf('(')+1,spec.lastIndexOf(')')))));
+				break;
+			case "poshea":
+				scopeFeatureExtractor.addFeature(new POSHead(spec.substring(spec.indexOf('(')+1,spec.lastIndexOf(')'))));
+				break;
+			case "baseli":
+				scopeFeatureExtractor.addFeature(new Baseline());
+				break;
+			default:
+				throw new RuntimeException("Feature Spec invalid: " + spec);
+			}
+		}
+
+		this.reverted = reverted;
+		CRFIterationCount = crfIterations;
 	}
 
 	@Override
 	public void train(Corpus c) {
-		scopeDetector = new TrainMalletCRF(CRFIterationCount); 
-
-
+		TrainMalletCRF scopeDetector = new TrainMalletCRF(CRFIterationCount); 
 		for (Sentence s : c.sentences) {
 
 			String[] recentScope = null;
-			
+			recentScope = new String[s.words.get(0).cues.size()];
+			for(int i=0; i<recentScope.length; i++){
+				recentScope[i] = "_";
+			}
 			//ArrayList<List<List<String>>> features = extractClassif(s);
 			List<List<String>> labels = new LinkedList<List<String>>();
 			
-			for(Word w : s.words) {
-
-				if(recentScope == null) {
-					recentScope = new String[w.cues.size()];
-					for(int i=0; i<recentScope.length; i++){
-						recentScope[i] = "_";
-					}
-				}
-
-				int i = 0;
-				for(Cue cue : w.cues) {
-					if(labels.size() <= i) labels.add(i, new LinkedList<String>());
-					if(!cue.scope.equals("_")) 
-					{
-						if(recentScope[i].equals("_")) {
-							labels.get(i).add("B");
+			for(int cueIndex = 0; cueIndex<s.words.get(0).cues.size(); cueIndex++) {
+				List<String> cueLabels = new LinkedList<>();
+				labels.add(cueLabels);
+				
+				Iterator<Word> wordIt = s.words.listIterator(reverted?s.words.size():0);
+				while(wordIt.hasNext()) {
+					Word w = wordIt.next();
+					Cue cue = w.cues.get(cueIndex);
+						if(!cue.scope.equals("_")) 
+						{
+//							if(recentScope[cueIndex].equals("_")) {
+//								cueLabels.add("B");
+//							}
+//							else
+							{
+								cueLabels.add("I");
+							}
 						}
-						else {
-							labels.get(i).add("I");
-						}
-					}
-					else labels.get(i).add("O");
+						else cueLabels.add("O");
 
-					recentScope[i] = cue.scope;
+						recentScope[cueIndex] = cue.scope;
 
-					i++;
 				}
 			}
-			
-			
+
+
 			List<List<List<String>>> sfvList = scopeFeatureExtractor.extractTraing(s);
 			int index = 0;
 			for(List<List<String>> sfv : sfvList) {
@@ -85,25 +98,49 @@ final static int POSRange = 4;
 		scopeClassifier = new ClassifyMalletCRF(scopeDetector.train());
 	}
 
+	ArrayList<List<List<String>>> values;
+	Sentence recentPredictedSentence;
+	
 	@Override
 	public void classify(Sentence sentence) {
-		ArrayList<List<List<String>>> values = scopeFeatureExtractor.extractClassif(sentence);
-		for(int cueIndex = 0; cueIndex < values.size(); cueIndex++) {
-			List<List<String>> valueItem = values.get(cueIndex);
-			List<String> labels = scopeClassifier.predictSequence(valueItem);
-			
+		
+		for(int cueIndex = 0; cueIndex < sentence.words.get(0).cues.size(); cueIndex++) {
+
+			List<String> labels = getPredictedLabels(sentence, cueIndex);
 			Iterator<String> labelIt = labels.iterator();
-			for(Word w : sentence.words) {
+			
+			Iterator<Word> wordIt = sentence.words.listIterator(0);//(reverted?sentence.words.size():0);
+			while(wordIt.hasNext()) {
+				Word w = wordIt.next();
+			
 				if(labelIt.hasNext())  {
 					String label = labelIt.next();
-					
+
 					if(label.equals("B") || label.equals("I")) {
 						w.cues.get(cueIndex).scope = w.lemma;
 					}
-					
+
 				}
 				else break;
 			}
 		}
+	}
+	
+	@Override
+	public List<String> getPredictedLabels(Sentence s, int cueIndex)
+	{
+		if(values == null || recentPredictedSentence == null || recentPredictedSentence!=s) {
+			values = scopeFeatureExtractor.extractClassif(s);
+			recentPredictedSentence = s;
+		}
+
+		return scopeClassifier.predictSequence(values.get(cueIndex));
+	}
+	
+
+	@Override
+	public String toString()
+	{
+		return "CRF@"+CRFIterationCount+" " +(reverted?"Reverse":"Forward") +", Features: \n" + scopeFeatureExtractor;
 	}
 }

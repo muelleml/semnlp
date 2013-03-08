@@ -16,6 +16,9 @@ import features.cue.CueFeatureExtractor;
 import features.cue.Lemma;
 import features.cue.NGram;
 import features.cue.POS;
+/**
+ * @author: Manuel Müller
+ **/
 
 public class HybridCueDetector implements CueClassifier {
 	final static String nonAffixCue = "nonAffixCue";
@@ -126,5 +129,11 @@ public class HybridCueDetector implements CueClassifier {
 				word.cues.add(cu);
 			}
 		}
+	}
+	
+	@Override
+	public String toString()
+	{
+		return "Hybrid Cue Detector";
 	}
 }

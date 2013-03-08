@@ -27,11 +27,9 @@ public class POSSequence implements ScopeFeature {
 		List<List<String>> sentenceList = new LinkedList<List<String>>();
 		
 		int wordIndex = 0;
+		value = new ArrayList<List<List<String>>>(s.words.get(0).cues.size());
+		cueIndices = new int[s.words.get(0).cues.size()];
 		for(Word w : s.words) {
-			if(value == null) {
-				value = new ArrayList<List<List<String>>>(w.cues.size());
-				cueIndices = new int[w.cues.size()];
-			}
 			// Feature Liste eines Wortes
 			List<String> wordList = new LinkedList<String>();
 			
@@ -86,8 +84,13 @@ public class POSSequence implements ScopeFeature {
 		return list;
 		}
 		catch(Exception e) {
-			System.err.println(e);
-			return new ArrayList<List<List<String>>>();
+			throw new RuntimeException(e);
 		}
+	}
+	
+	@Override
+	public String toString()
+	{
+		return "POS Sequence Range: " + range;
 	}
 }

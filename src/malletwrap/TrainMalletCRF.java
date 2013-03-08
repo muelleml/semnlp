@@ -65,10 +65,7 @@ public class TrainMalletCRF {
 
 		for (int i = 1; i <= iterations; i++) {
 			try {
-				System.err.println("Starting iteration " + i);
 				if (crfTrainer.train(trainingData, 1)) {
-					System.err.println("Finished early after " + i
-							+ " iterations");
 					break;
 				}
 			} catch (Exception e) {

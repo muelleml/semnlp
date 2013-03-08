@@ -1,36 +1,23 @@
 package classifier.scopes;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
 import model.Corpus;
 import model.Cue;
 import model.Node;
-import model.Node.ChildSelector;
 import model.Sentence;
 import model.Word;
+import util.CueChildSelector;
+
+/**
+ * @author: Patrik Eckebrecht
+ **/
 
 public class BaselineScopeDetector implements ScopeClassifier
 {
-	private class CueChildSelector implements ChildSelector {
-		private int cueIndex;
-		public CueChildSelector(int cueIndex) {
-			this.cueIndex = cueIndex;
-		}
-		@Override
-		public boolean selectChild(Node child)
-		{
-			try {
-				return !child.word.cues.get(cueIndex).cue.equals("_");
-			}
-			catch(IndexOutOfBoundsException e) {
-				return false;
-			}
-			catch(NullPointerException ne) {
-				return false;
-			}
-		}
-	}
 	static Set<String> sNodes;
 	static Set<String> sBarNodes;
 	
@@ -69,5 +56,36 @@ public class BaselineScopeDetector implements ScopeClassifier
 			}
 		}
 	}
+	@Override
+	public List<String> getPredictedLabels(Sentence sentence, int cueIndex)
+	{
+		String recentLabel = "O";
+		List<String> labels = new LinkedList<>();
+		for(Word w : sentence.words) {
+			Node S = w.node.findMother(sBarNodes);
+			if(S==null)
+				S = w.node.findMother(sNodes);
+			if(S==null)
+				S=w.node.findRoot();
+			Cue c = w.cues.get(cueIndex);
+				Node currentCue = S.findChild(new CueChildSelector(cueIndex));
+				String label;
+				if(currentCue != null && currentCue.word != w)
+				{
+					if(recentLabel.equals("O"))
+						label = ("B");
+					else label = ("I");
+				}
+				else label = ("O");
+				labels.add(label);
+				recentLabel = label;
+		}
+		return labels;
+	}
 
+	@Override
+	public String toString()
+	{
+		return "Baseline";
+	}
 }

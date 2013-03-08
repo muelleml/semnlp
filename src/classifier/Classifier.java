@@ -5,13 +5,14 @@ package classifier;
 
 import model.Corpus;
 import model.Sentence;
+import util.Sysout;
 import classifier.cues.CueClassifier;
 import classifier.cues.GoldCueDetector;
 import classifier.cues.HybridCueDetector;
 import classifier.scopes.BaselineScopeDetector;
 import classifier.scopes.CRFScopeDetector;
-import classifier.scopes.GoldScopeDetector;
 import classifier.scopes.ScopeClassifier;
+import classifier.scopes.StackedScopeDetector;
 
 /**
  * @author muelleml,eckebrpk
@@ -25,7 +26,11 @@ public class Classifier {
 	
 	public Classifier() {
 		cueClassif = new HybridCueDetector();
-		scopeClassif = new CRFScopeDetector();
+		scopeClassif = new BaselineScopeDetector();
+	}
+	public Classifier(CueClassifier cueClassif, ScopeClassifier scopeClassif) {
+		this.cueClassif = cueClassif;
+		this.scopeClassif = scopeClassif;
 	}
 
 	public Classifier(String cue)
@@ -45,28 +50,55 @@ public class Classifier {
 
 	public Classifier(String cue, String scope)
 	{
-		switch (cue.toLowerCase())
+		this(cue);
+
+		String scopeParam;
+		String[] p;
+		
+		switch (scope.toLowerCase().substring(0,3))
 		{
-		case "gold":
-			cueClassif = new GoldCueDetector();
+		case "crf":
+
+			scopeParam = scope.substring(scope.indexOf("[")+1, scope.indexOf("]")); 
+			p = scopeParam.split(",");
+			scopeClassif = new CRFScopeDetector(scope.substring(scope.indexOf("(")+1, scope.lastIndexOf(")")),Integer.parseInt(p[0]),Integer.parseInt(p[1])==1);
+			
 			break;
-		case "hybrid":
-			cueClassif = new HybridCueDetector();
+		case "bas":
+			scopeClassif = new BaselineScopeDetector();
+			break;
+		case "sta":
+
+			scopeParam = scope.substring(scope.indexOf("[")+1, scope.indexOf("]")); 
+			p = scopeParam.split(",");
+			scopeClassif = new StackedScopeDetector(scope.substring(scope.indexOf("(")+1, scope.lastIndexOf(")")),Integer.parseInt(p[0]),Integer.parseInt(p[1])==1);
 			break;
 		default:
-			throw new RuntimeException("Invalid Cue-Detector provided: '" + cue + "'. Valid are: 'Hybrid', 'Gold'");
+			throw new RuntimeException("Invalid Scope-Detector provided: '" + scope + "'. Valid are: 'CRF', 'Gold', 'Baseline'");
 		}
+	}
+	
+	public Classifier(String cue, String scope, String stackParams)
+	{
+		this(cue);
+		
+		String scopeParam;
+		String[] p;
 
-		switch (scope.toLowerCase())
+		switch (scope.toLowerCase().substring(0,3))
 		{
-		case "gold":
-			scopeClassif = new GoldScopeDetector();
-			break;
 		case "crf":
-			scopeClassif = new CRFScopeDetector();
+			scopeParam = scope.substring(scope.indexOf("[")+1, scope.indexOf("]")); 
+			p = scopeParam.split(",");
+			scopeClassif = new CRFScopeDetector(scope.substring(scope.indexOf("(")+1, scope.lastIndexOf(")")),Integer.parseInt(p[0]),Integer.parseInt(p[1])==1);
 			break;
 		case "baseline":
 			scopeClassif = new BaselineScopeDetector();
+			break;
+		case "stacked":
+			scopeParam = scope.substring(scope.indexOf("[")+1, scope.indexOf("]")); 
+			p = scopeParam.split(",");
+			scopeClassif = new StackedScopeDetector(stackParams, Integer.parseInt(p[0]),Integer.parseInt(p[1])==1);
 			break;
 		default:
 			throw new RuntimeException("Invalid Scope-Detector provided: '" + scope + "'. Valid are: 'CRF', 'Gold', 'Baseline'");
@@ -98,5 +130,12 @@ public class Classifier {
 		scopeClassif.classify(sentence);
 
 		return sentence;
+	}
+	
+	@Override
+	public String toString()
+	{
+		return "Classifier Using:\nCue: " + cueClassif+"\nScope:\n" + scopeClassif;
+		
 	}
 }

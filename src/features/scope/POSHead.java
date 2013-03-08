@@ -15,6 +15,14 @@ public class POSHead implements ScopeFeature {
 		this.orders = orders;
 	}
 	
+	public POSHead(String spec)
+	{
+		String[] orders = spec.split(",");
+		this.orders = new int[orders.length];
+		for(int i=0; i<orders.length; i++)
+			this.orders[i] = Integer.parseInt(orders[i].trim());
+	}
+
 	@Override
 	public ArrayList<List<List<String>>> extractClassif(Sentence s) {
 		try { s.ensureFinalized(); s.generateTree(); }catch(Exception e) { }
@@ -43,5 +51,11 @@ public class POSHead implements ScopeFeature {
 		}
 		return r;
 	}
-
+	@Override
+	public String toString()
+	{
+		String s = "POS Head Orders: ";
+		for(int i : orders) s += i+",";
+		return s.substring(0, s.length()-1);
+	}
 }

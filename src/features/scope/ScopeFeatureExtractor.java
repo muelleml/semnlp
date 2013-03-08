@@ -37,37 +37,37 @@ public class ScopeFeatureExtractor {
 	public List<List<List<String>>> extractTraing(Sentence s){
 		List<List<List<String>>> r = new LinkedList<List<List<String>>>();
 
-		List<String> labels = new LinkedList<String>();
-		String[] recentScope = null;
-		
-		for(Word w : s.words) {
-			
-			if(recentScope == null) {
-				recentScope = new String[w.cues.size()];
-				for(int i=0; i<recentScope.length; i++){
-					recentScope[i] = "_";
-				}
-			}
-
-			int i = 0;
-			for(Cue cue : w.cues) {
-				if(!cue.scope.equals("_")) 
-				{
-					if(recentScope[i].equals("_")) {
-						labels.add("B");
-					}
-					else {
-						labels.add("I");
-					}
-				}
-				else labels.add("O");
-
-				recentScope[i] = cue.scope;
-				
-				i++;
-			}
-		}
-		
+//		List<String> labels = new LinkedList<String>();
+//		String[] recentScope = null;
+//		
+//		for(Word w : s.words) {
+//			
+//			if(recentScope == null) {
+//				recentScope = new String[w.cues.size()];
+//				for(int i=0; i<recentScope.length; i++){
+//					recentScope[i] = "_";
+//				}
+//			}
+//
+//			int i = 0;
+//			for(Cue cue : w.cues) {
+//				if(!cue.scope.equals("_")) 
+//				{
+//					if(recentScope[i].equals("_")) {
+//						labels.add("B");
+//					}
+//					else {
+//						labels.add("I");
+//					}
+//				}
+//				else labels.add("O");
+//
+//				recentScope[i] = cue.scope;
+//				
+//				i++;
+//			}
+//		}
+//		
 		
 		for (ScopeFeature f : features){
 			int i=0;
@@ -103,5 +103,14 @@ public class ScopeFeatureExtractor {
 		}
 		
 		return r;
+	}
+	
+	@Override
+	public String toString()
+	{
+		String s = "";
+		for(ScopeFeature f : features)
+			s += "  " + f+"\n";
+		return s;
 	}
 }
