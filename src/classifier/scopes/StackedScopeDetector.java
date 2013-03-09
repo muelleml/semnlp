@@ -139,8 +139,9 @@ public class StackedScopeDetector implements ScopeClassifier
 		SortedSet<Integer> invalidIndices = new TreeSet<>(); 
 		while(cue.hasNext() && fit.hasNext()) {
 			List<String> feature = fit.next();
+			String c = cue.next();
 			for(int i=0; i<feature.size();i++)
-				if(!feature.get(i).equals(cue.next()))
+				if(!feature.get(i).equals(c))
 					invalidIndices.add(i);
 		}
 		if(invalidIndices.size() > 0) {
