@@ -6,7 +6,6 @@ package features.cue;
 import java.util.LinkedList;
 import java.util.List;
 
-
 import model.Sentence;
 import model.Word;
 
@@ -28,7 +27,7 @@ public class Lemma implements CueFeature {
 	@Override
 	public List<String> extract(Word w, Sentence s) {
 		List<String> r = new LinkedList<String>();
-		r.add(w.lemma);
+		r.add("Lemma:" + w.lemma);
 		return r;
 	}
 

@@ -40,6 +40,8 @@ public class POS implements CueFeature {
 	public List<String> extract(Word w, Sentence s) {
 		List<String> r = new LinkedList<String>();
 
+		String prefix = "POS" + Integer.toString(position)+":";
+
 		int rel = getPosition(w, s);
 
 		if (rel < 0) {
@@ -48,25 +50,25 @@ public class POS implements CueFeature {
 
 		if (rel + position >= 0 && rel + position <= s.words.size() - 1) {
 
-			r.add(s.words.get(rel + position).pos);
+			r.add(prefix + s.words.get(rel + position).pos);
 		} else {
-			r.add("");
+			r.add(prefix + "NULL");
 		}
 
 		return r;
 	}
-	
-	private int getPosition(Word w, Sentence s){
+
+	private int getPosition(Word w, Sentence s) {
 		int i = 0;
-		
-		for (Word tW : s.words){
-			
-			if (tW.tokenID.equals(w.tokenID)){
+
+		for (Word tW : s.words) {
+
+			if (tW.tokenID.equals(w.tokenID)) {
 				i = s.words.indexOf(tW);
 			}
-			
+
 		}
-		
+
 		return i;
 	}
 

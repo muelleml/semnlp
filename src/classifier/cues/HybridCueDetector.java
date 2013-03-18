@@ -1,5 +1,6 @@
 package classifier.cues;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -16,33 +17,50 @@ import features.cue.CueFeatureExtractor;
 import features.cue.Lemma;
 import features.cue.NGram;
 import features.cue.POS;
+import features.cue.Path;
+
 /**
- * @author: Manuel Müller
+ * @author: Manuel Mï¿½ller
  **/
 
 public class HybridCueDetector implements CueClassifier {
 	final static String nonAffixCue = "nonAffixCue";
 
+	// dis, un etc
+	final static String shortAffixCue = "ShortAffixCue";
+
+	// less
+	final static String longAffixCue = "longAffixCue";
+
 	ClassifyMalletMaxEnt cueClassifier;
 	TrainMalletMaxEnt cueDetector;
 	CueFeatureExtractor cueFeatureExtractor;
-	
+
 	List<CueFeature> cueFeatureList;
-	
+
 	Set<String> affixCues;
-    Set<String> lu;
-	
+	Set<String> lu;
+
+	Set<String> shortAffixes = new TreeSet<String>();
+	Set<String> longAffixes = new TreeSet<String>();
+
 	public HybridCueDetector() {
-	
+
 		// configure the featureExtractor
 		cueFeatureExtractor = new CueFeatureExtractor();
 		cueFeatureExtractor.addFeature(new POS(0));
 		cueFeatureExtractor.addFeature(new POS(-1));
 		cueFeatureExtractor.addFeature(new POS(-2));
 		cueFeatureExtractor.addFeature(new POS(1));
+		cueFeatureExtractor.addFeature(new POS(2));
 		cueFeatureExtractor.addFeature(new Lemma());
-		cueFeatureExtractor.addFeature(new NGram(1, 3, 4, true));
-		cueFeatureExtractor.addFeature(new NGram(1, 3, 5, false));
+		cueFeatureExtractor.addFeature(new NGram(1, 3, 6, true));
+		cueFeatureExtractor.addFeature(new NGram(1, 3, 6, false));
+		cueFeatureExtractor.addFeature(new Path(2));
+
+		shortAffixes.addAll(Arrays.asList("dis", "im", "in", "ir", "un"));
+		longAffixes.addAll(Arrays.asList("less"));
+
 	}
 
 	@Override
@@ -85,20 +103,28 @@ public class HybridCueDetector implements CueClassifier {
 					// experiment! also in classifyWord
 					if (cue.cue.equals(w.word)) {
 						lu.add(cue.cue.toLowerCase());
-					} 
-					else if (!cue.cue.equals("_")) {
+					} else if (shortAffixes.contains(cue.cue)) {
 						affixCues.add(cue.cue);
-						cueDetector.addTrainingInstance(cue.cue, cueFeatureExtractor.extract(w, s));
+						cueDetector.addTrainingInstance(shortAffixCue,
+								cueFeatureExtractor.extract(w, s));
+						System.out.println(w.toString());
+					} else if (longAffixes.contains(cue.cue)) {
+						affixCues.add(cue.cue);
+						cueDetector.addTrainingInstance(longAffixCue,
+								cueFeatureExtractor.extract(w, s));
+						System.out.println(w.toString());
 					}
 
 					else {
-						cueDetector.addTrainingInstance(nonAffixCue, cueFeatureExtractor.extract(w, s));
+						cueDetector.addTrainingInstance(nonAffixCue,
+								cueFeatureExtractor.extract(w, s));
 					}
 
 				}
 			}
 		}
 		cueClassifier = new ClassifyMalletMaxEnt(cueDetector.train());
+		System.out.println(affixCues.toString());
 	}
 
 	@Override
@@ -108,19 +134,35 @@ public class HybridCueDetector implements CueClassifier {
 			Cue cu = null;
 
 			word.cues.clear();
-			
-			for(int i=0; i<cueCount; i++)
-			{
+
+			for (int i = 0; i < cueCount; i++) {
 				word.cues.add(new Cue("_", "_", "_"));
 			}
-			
+
 			if (lu.contains(word.word.toLowerCase())) {
 				cu = new Cue(word.word, "_", "_");
-			}
-			else {
-				String c = cueClassifier.classifyInstance(cueFeatureExtractor.extract(word, sentence));
-				if (!c.equals(nonAffixCue)) {
-					cu = new Cue(c, "_", "_");
+			} else {
+				String c = cueClassifier.classifyInstance(cueFeatureExtractor
+						.extract(word, sentence));
+
+				if (c.equals(nonAffixCue)) {
+					//cu = new Cue("_", "_", "_");
+					/*
+					 * if (word.word.endsWith("less") |
+					 * word.word.endsWith("lessly")) { cu = new Cue("less", "_",
+					 * "_"); }
+					 */
+				} else if (c.equals(shortAffixCue)) {
+					for (String tCue : shortAffixes) {
+						if (word.word.startsWith(tCue)) {
+							cu = new Cue(tCue, "_", "_");
+							break;
+						}
+
+					}
+
+				} else if (c.equals(longAffixCue)) {
+					cu = new Cue("less", "_", "_");
 				}
 			}
 
@@ -130,10 +172,9 @@ public class HybridCueDetector implements CueClassifier {
 			}
 		}
 	}
-	
+
 	@Override
-	public String toString()
-	{
+	public String toString() {
 		return "Hybrid Cue Detector";
 	}
 }

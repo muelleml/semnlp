@@ -71,24 +71,28 @@ public class NGram implements CueFeature {
 
 		// shortening
 		sb = new StringBuilder(sb.substring(0, length));
+		
+		//System.out.println(sb);
 
-		return gram(sb.toString(), min, max);
+		return gram2(sb.toString(), min, max);
 	}
 
-	private List<String> gram(String l, int m, int n) {
+	private List<String> gram(String l, int mn, int mx) {
+
+		// System.out.println(l);
 
 		List<String> r = new LinkedList<String>();
 
 		// check if maximum depth is reached
-		if (n - m < 1) {
+		if (mx - mn > 0) {
 
 			int i = 0;
 
-			while (n + i <= l.length()) {
-				String t = l.substring(i, n + i);
+			while (mx + i <= l.length()) {
+				String t = l.substring(i, mx + i);
 
-				r.add(t);
-				r.addAll(gram(t, m, n - 1));
+				r.add("NGRAM" + Integer.toString(mn) + Integer.toString(mx) + t);
+				r.addAll(gram(t, mn, mx - 1));
 
 				i++;
 			}
@@ -99,4 +103,18 @@ public class NGram implements CueFeature {
 
 	}
 
+	private List<String> gram2(String l, int mn, int mx) {
+		List<String> r = new LinkedList<String>();
+
+		for (int i = 0; i < l.length()-1; i++) {
+
+			for (int j = i; j < l.length(); j++) {
+				r.add("NGRAM" + Integer.toString(i) + Integer.toString(j)
+						+ l.substring(i, j));
+			}
+		}
+
+		return r;
+
+	}
 }
