@@ -7,7 +7,6 @@ import java.io.PrintStream;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.reflect.Array;
 import java.util.Iterator;
-import java.util.List;
 
 public class Sysout
 {

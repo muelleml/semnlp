@@ -6,7 +6,6 @@ package features.cue;
 import java.util.LinkedList;
 import java.util.List;
 
-
 import model.Sentence;
 import model.Word;
 

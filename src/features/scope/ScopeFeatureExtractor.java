@@ -7,9 +7,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import model.Cue;
 import model.Sentence;
-import model.Word;
 
 /**
  * @author eckebrpk

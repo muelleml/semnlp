@@ -1,11 +1,8 @@
 package main;
-import features.scope.Baseline;
 import io.ConllReader;
 import io.ConllWriter;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
 import java.util.Date;
 
 import model.Corpus;

@@ -6,11 +6,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import model.Cue;
 import model.Node;
 import model.Sentence;
 import model.Word;
-import util.ArraySet;
 import util.CueChildSelector;
 
 public class Baseline implements ScopeFeature {
@@ -45,34 +43,30 @@ public class Baseline implements ScopeFeature {
 			List<List<String>> sentence = new ArrayList<List<String>>();
 			value.add(sentence);
 			int cueIndex = 0;
-			for(Word w : s.words) {
+			for(int wi=0; wi < s.words.size(); wi++) {
 				List<String> wordList = new LinkedList<>();
 				wordList.add(falseString);
 				sentence.add(wordList);
-
 			}
+			
 			int wIndex = 0;
 			for(Word w : s.words) {
 				if(!w.cues.get(cueIndex).cue.equals("_")) {
-
-
 					Node S = w.node.findMother(sBarNodes);
 					if(S==null)
 						S = w.node.findMother(sNodes);
 					if(S==null)
 						S=w.node.findRoot();
-
-					for(Word scopeWord : S.getAllWords()) {
-						//scopeWord.cues.get(cueIndex).scope = scopeWord.lemma;
+					List<Word> wList = S.getAllWords();
+					for(int i=0; i<wList.size(); i++)
 						sentence.get(wIndex).set(0, trueString);
-					}
 
 					cueIndex++;
 					if(w.cues.size() == cueIndex) break;
 					else {
 						sentence = new LinkedList<List<String>>();
 						value.add(sentence);
-						for(Word x : s.words) {
+						for(int x = 0; x<s.words.size(); x++) {
 							List<String> wordList = new LinkedList<>();
 							wordList.add(falseString);
 							sentence.add(wordList);

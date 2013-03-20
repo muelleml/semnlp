@@ -5,7 +5,6 @@ package classifier;
 
 import model.Corpus;
 import model.Sentence;
-import util.Sysout;
 import classifier.cues.CueClassifier;
 import classifier.cues.GoldCueDetector;
 import classifier.cues.HybridCueDetector;

@@ -7,9 +7,8 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.concurrent.Semaphore;
 
-import util.Sysout;
-
 import model.Corpus;
+import util.Sysout;
 import classifier.Classifier;
 
 public class CrossValidator

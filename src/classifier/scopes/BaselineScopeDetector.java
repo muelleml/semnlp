@@ -6,7 +6,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import model.Corpus;
-import model.Cue;
 import model.Node;
 import model.Sentence;
 import model.Word;
@@ -91,7 +90,6 @@ public class BaselineScopeDetector implements ScopeClassifier
 				S = w.node.findMother(sNodes);
 			if(S==null)
 				S=w.node.findRoot();
-			Cue c = w.cues.get(cueIndex);
 			Node currentCue = S.findChild(new CueChildSelector(cueIndex));
 			String label;
 			if(currentCue != null && currentCue.word != w)

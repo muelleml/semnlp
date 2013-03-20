@@ -6,9 +6,8 @@ package io;
 import java.io.File;
 import java.io.IOException;
 
-import util.SimpleFileNameFilter;
-
 import model.Corpus;
+import util.SimpleFileNameFilter;
 
 /**
  * @author muelleml

@@ -6,8 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-import model.Sentence;
-
 public class ArrayList<T> implements List<T>, Iterable<T>
 {
 	T[] data;
