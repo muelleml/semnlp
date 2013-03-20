@@ -3,7 +3,10 @@ package main;
 import io.ConllWriter;
 import io.PartitionReader;
 
+import java.util.Date;
 import java.util.concurrent.Semaphore;
+
+import util.Sysout;
 
 import model.Corpus;
 import classifier.Classifier;
@@ -17,10 +20,12 @@ public class CrossValidator
 	 */
 	public static void main(final String[] args) throws InterruptedException
 	{
-		if(args.length != 2) {
-			throw new RuntimeException("Usage: semnlp <input-dir> <output-dir>");
+		if(args.length != 4) {
+			throw new RuntimeException("Usage: semnlp <input-dir> <output-dir> <cuedetector> <scopedetector>");
 		}
 
+		Sysout.init();
+		Date start = new Date();
 
 		final Corpus[] corpi = PartitionReader.readPartitionFolder(args[0]);
 		final Corpus[] result = new Corpus[corpi.length+1];
@@ -29,12 +34,14 @@ public class CrossValidator
 
 		for(int r = 0; r < corpi.length; r++) {
 			final int run = r; 
-			new Thread(new Runnable() {
-
-				@Override
-				public void run() {
+//			new Thread(new Runnable() {
+//
+//				@Override
+//				public void run() {
+			Sysout.out.println("Run " + run);
 					try {
-						Classifier classifier = new Classifier();
+						Date startrun = new Date();
+						Classifier classifier = new Classifier(args[2], args[3]);
 						Corpus train = new Corpus();
 						for(int i=0; i<corpi.length; i++) {
 							if(i!=run)
@@ -42,9 +49,10 @@ public class CrossValidator
 						}
 						classifier.train(train);
 						result[run+1] = classifier.classify(corpi[run]);
+						Sysout.out.println("Finished Run. Took: " + new Date(startrun.getTime() - new Date().getTime()));
 					}
 					catch(InterruptedException e) {
-						e.printStackTrace();
+						e.printStackTrace(Sysout.err);
 					}
 					//					for(Sentence s : result[run+1].sentences) {
 					//						for(Word w : s.words){ 
@@ -56,11 +64,11 @@ public class CrossValidator
 					//						}
 					//					}
 
-					mutex.release();
-				}
-			}).start();
+//					mutex.release();
+//				}
+//			}).start();
 		}
-		mutex.acquire(corpi.length);
+//		mutex.acquire(corpi.length);
 		for(int i=1; i<result.length; i++) {
 			result[0].addCorpus(result[i]);
 		}
@@ -85,6 +93,7 @@ public class CrossValidator
 		}).start();
 
 		mutex.acquire(corpi.length+1);
+		Sysout.out.println("Finished Complete. Took: " + new Date(start.getTime() - new Date().getTime()));
 	}
 
 }

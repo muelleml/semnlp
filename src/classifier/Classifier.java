@@ -71,7 +71,7 @@ public class Classifier {
 
 			scopeParam = scope.substring(scope.indexOf("[")+1, scope.indexOf("]")); 
 			p = scopeParam.split(",");
-			scopeClassif = new StackedScopeDetector(scope.substring(scope.indexOf("(")+1, scope.lastIndexOf(")")),Integer.parseInt(p[0]),Integer.parseInt(p[1])==1);
+			scopeClassif = new StackedScopeDetector(scope.substring(scope.indexOf("(")+1, scope.lastIndexOf(")")),Integer.parseInt(p[0]),Integer.parseInt(p[1])==1, Integer.parseInt(p[2]) == 1);
 			break;
 		default:
 			throw new RuntimeException("Invalid Scope-Detector provided: '" + scope + "'. Valid are: 'CRF', 'Gold', 'Baseline'");
@@ -98,7 +98,7 @@ public class Classifier {
 		case "stacked":
 			scopeParam = scope.substring(scope.indexOf("[")+1, scope.indexOf("]")); 
 			p = scopeParam.split(",");
-			scopeClassif = new StackedScopeDetector(stackParams, Integer.parseInt(p[0]),Integer.parseInt(p[1])==1);
+			scopeClassif = new StackedScopeDetector(stackParams, Integer.parseInt(p[0]),Integer.parseInt(p[1])==1,Integer.parseInt(p[2])==1);
 			break;
 		default:
 			throw new RuntimeException("Invalid Scope-Detector provided: '" + scope + "'. Valid are: 'CRF', 'Gold', 'Baseline'");

@@ -19,7 +19,6 @@ public class POSSequence implements ScopeFeature {
 
 	@Override
 	public ArrayList<List<List<String>>> extractClassif(Sentence s) {
-		try {
 		ArrayList<List<List<String>>> value =  null;
 		
 		int[] cueIndices = null;
@@ -73,7 +72,7 @@ public class POSSequence implements ScopeFeature {
 				// Hier stehen wieder die POS tags
 				List<String> cueWordList = new LinkedList<String>(wordList);
 				// Cue Diff Index reinschreiben
-				word.add("index:" + (sIndex-cueIndex));
+				word.add("index:" + bucket(sIndex-cueIndex));
 				word.addAll(wordList);
 				// Liste für dieses Wort in die Liste für diese Cue packen
 //				while(value.size() <= i) value.add(new LinkedList<List<String>>());
@@ -82,15 +81,74 @@ public class POSSequence implements ScopeFeature {
 			sIndex++;
 		}
 		return list;
-		}
-		catch(Exception e) {
-			throw new RuntimeException(e);
-		}
 	}
 	
+	private int bucket(int i)
+	{
+		return i;
+//		switch(i) {
+//		case 0: return 0;
+//		case 1: return 1;
+//		case 2: return 2;
+//		case 3:
+//		case 4: return 4;
+//		case 5:
+//		case 6:
+//		case 7:return 7;
+//		case 8:
+//		case 9:
+//		case 10:
+//		case 11:return 11;
+//		default:return 15;
+//		}
+	}
+
 	@Override
 	public String toString()
 	{
 		return "POS Sequence Range: " + range;
+	}
+
+	@Override
+	public List<List<String>> extractClassif(Sentence s, int cueIndex) {
+		try {
+		int cueLocation = -1;
+		// Feature Liste eines Satzes
+		List<List<String>> sentenceList = new LinkedList<List<String>>();
+		
+		int wordIndex = 0;
+		for(Word w : s.words) {
+			
+			// Index of Cue in Sentence speichern
+				if(!w.cues.get(cueIndex).cue.equals("_")) {
+					cueLocation = wordIndex;
+			}
+			wordIndex++;
+		}
+		
+		// Cue Index einbauen
+		wordIndex = 0;
+		for(Word w :s.words) {
+			// Feature Liste eines Wortes
+			List<String> wordList = new LinkedList<String>();
+		for(int i=-range; i<range; i++) {
+			if(wordIndex+i > 0 && wordIndex+i < s.words.size()) {
+				wordList.add("pos" + i + ":" + s.words.get(wordIndex+i).pos);
+			}
+			else {
+				wordList.add("pos" + i + ":NULL");
+			}
+		}
+		wordList.add("index:" + (wordIndex-cueLocation));
+		
+		sentenceList.add(wordList);
+		
+			wordIndex++;
+		}
+		return sentenceList;
+		}
+		catch(Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 }

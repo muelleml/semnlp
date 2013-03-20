@@ -71,4 +71,13 @@ public class Node {
 		else return this;
 	}
 
+	public List<Word> getAllWords()
+	{
+		List<Word> words = new LinkedList<>();
+		for(Node n : daughters)
+			words.addAll(n.getAllWords());
+		if(word != null) words.add(word);
+		return words;
+	}
+
 }

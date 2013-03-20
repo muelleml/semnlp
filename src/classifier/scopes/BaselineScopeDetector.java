@@ -20,15 +20,15 @@ public class BaselineScopeDetector implements ScopeClassifier
 {
 	static Set<String> sNodes;
 	static Set<String> sBarNodes;
-	
+
 	static {
 		sNodes = new TreeSet<String>();
-		sNodes.add("S");
-		sNodes.add("SINV");
-		sNodes.add("SBARQ");
-		sNodes.add("SQ");
+				sNodes.add("S");
+				sNodes.add("SINV");
+				sNodes.add("SQ");
 		sBarNodes = new TreeSet<String>();
 		sBarNodes.add("SBar");
+		sBarNodes.add("SBARQ");
 	}
 
 	@Override
@@ -39,22 +39,46 @@ public class BaselineScopeDetector implements ScopeClassifier
 	@Override
 	public void classify(Sentence sentence)
 	{
-		for(Word w : sentence.words) {
-			Node S = w.node.findMother(sBarNodes);
-			if(S==null)
-				S = w.node.findMother(sNodes);
-			if(S==null)
-				S=w.node.findRoot();
+		if(sentence.words.get(0).cues.size() >0) {
 			int cueIndex = 0;
-			for(Cue c : w.cues){
-				Node currentCue = S.findChild(new CueChildSelector(cueIndex));
-				if(currentCue != null && currentCue.word != w)
-				{
-					c.scope = w.lemma;
+			for(Word w : sentence.words) {
+				if(!w.cues.get(cueIndex).cue.equals("_")) {
+
+
+					Node S = w.node.findMother(sBarNodes);
+					if(S==null)
+						S = w.node.findMother(sNodes);
+					if(S==null)
+						S=w.node.findRoot();
+
+					for(Word scopeWord : S.getAllWords()) {
+						if(scopeWord.cues.get(cueIndex).cue.equals("_"))
+							scopeWord.cues.get(cueIndex).scope = scopeWord.word;
+					}
+
+					cueIndex++;
+					if(w.cues.size() == cueIndex) break;
+
 				}
-				cueIndex++;
 			}
 		}
+
+		//		for(Word w : sentence.words) {
+		//			Node S = w.node.findMother(sBarNodes);
+		//			if(S==null)
+		//				S = w.node.findMother(sNodes);
+		//			if(S==null)
+		//				S=w.node.findRoot();
+		//			int cueIndex = 0;
+		//			for(Cue c : w.cues){
+		//				Node currentCue = S.findChild(new CueChildSelector(cueIndex));
+		//				if(currentCue != null && currentCue.word != w)
+		//				{
+		//					c.scope = w.lemma;
+		//				}
+		//				cueIndex++;
+		//			}
+		//		}
 	}
 	@Override
 	public List<String> getPredictedLabels(Sentence sentence, int cueIndex)
@@ -68,17 +92,17 @@ public class BaselineScopeDetector implements ScopeClassifier
 			if(S==null)
 				S=w.node.findRoot();
 			Cue c = w.cues.get(cueIndex);
-				Node currentCue = S.findChild(new CueChildSelector(cueIndex));
-				String label;
-				if(currentCue != null && currentCue.word != w)
-				{
-					if(recentLabel.equals("O"))
-						label = ("B");
-					else label = ("I");
-				}
-				else label = ("O");
-				labels.add(label);
-				recentLabel = label;
+			Node currentCue = S.findChild(new CueChildSelector(cueIndex));
+			String label;
+			if(currentCue != null && currentCue.word != w)
+			{
+				if(recentLabel.equals("O"))
+					label = ("B");
+				else label = ("I");
+			}
+			else label = ("O");
+			labels.add(label);
+			recentLabel = label;
 		}
 		return labels;
 	}

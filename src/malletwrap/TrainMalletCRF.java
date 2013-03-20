@@ -2,6 +2,7 @@ package malletwrap;
 
 import java.util.List;
 
+import util.Sysout;
 import cc.mallet.fst.CRF;
 import cc.mallet.fst.CRFOptimizableByLabelLikelihood;
 import cc.mallet.fst.CRFTrainerByValueGradients;
@@ -69,7 +70,8 @@ public class TrainMalletCRF {
 					break;
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+				Sysout.err.println("Mallet sucks");
+				e.printStackTrace(Sysout.err);
 			}
 		}
 		return crf;

@@ -68,7 +68,7 @@ public class ScopeFeatureExtractor {
 //			}
 //		}
 //		
-		
+
 		for (ScopeFeature f : features){
 			int i=0;
 			for(List<List<String>> cueLists : f.extractClassif(s)) {
@@ -82,6 +82,22 @@ public class ScopeFeatureExtractor {
 				i++;
 			}
 		}
+		
+		return r;
+	}
+	public List<List<String>> extractTraing(Sentence s, int cueIndex){
+		List<List<String>> r = new ArrayList<List<String>>(s.words.size());
+
+
+		for (ScopeFeature f : features){
+			List<List<String>> cueLists = f.extractClassif(s, cueIndex);
+					int j=0; 
+					for(List<String> word : cueLists) {
+						if(r.size() <= j) r.add(j, new LinkedList<String>());
+						r.get(j).addAll(word);
+						j++;
+					}
+			}
 		
 		return r;
 	}

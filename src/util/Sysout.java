@@ -1,7 +1,10 @@
 package util;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintStream;
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.reflect.Array;
 import java.util.Iterator;
 import java.util.List;
@@ -9,6 +12,7 @@ import java.util.List;
 public class Sysout
 {
 	public static PrintStream out;
+	public static PrintStream err;
 	static PrintStream log;
 	static {
 		try {
@@ -111,5 +115,37 @@ public class Sysout
 	static String extend(String s, int count, char c) {
 		for(int i=0;i<count; i++) s+=c;
 		return s;
+	}
+	public static void init()
+	{
+		Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler()
+		{
+			@Override
+			public void uncaughtException(Thread t, Throwable e)
+			{
+				e.printStackTrace(Sysout.err);
+			}
+		});
+		Sysout.err = System.err;
+		System.setErr(new PrintStream(new OutputStream()
+		{
+			
+			@Override
+			public void write(int b) throws IOException
+			{
+				// Do nothing so fucking bastard son of a bitch mallet crap wont spam
+			}
+		}));
+		Sysout.out = System.out;
+		System.setOut(new PrintStream(new OutputStream()
+		{
+			
+			@Override
+			public void write(int b) throws IOException
+			{
+				// Do nothing so fucking bastard son of a bitch mallet crap wont spam
+			}
+		}));
+		
 	}
 }

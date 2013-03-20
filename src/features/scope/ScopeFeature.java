@@ -8,4 +8,6 @@ import model.Sentence;
 public interface ScopeFeature {
 
 	public ArrayList<List<List<String>>> extractClassif(Sentence s);
+
+	public List<List<String>> extractClassif(Sentence s, int cueIndex);
 }

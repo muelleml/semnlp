@@ -14,7 +14,7 @@ public class POSHead implements ScopeFeature {
 	public POSHead(int... orders) {
 		this.orders = orders;
 	}
-	
+
 	public POSHead(String spec)
 	{
 		String[] orders = spec.split(",");
@@ -27,7 +27,7 @@ public class POSHead implements ScopeFeature {
 	public ArrayList<List<List<String>>> extractClassif(Sentence s) {
 		try { s.ensureFinalized(); s.generateTree(); }catch(Exception e) { }
 		ArrayList<List<List<String>>>  r = new ArrayList<List<List<String>>>();
-		
+
 		for(int i=0; i<s.words.getFirst().cues.size(); i++) {
 			List<List<String>> sentence = new LinkedList<List<String>>();
 			r.add(sentence);
@@ -40,7 +40,7 @@ public class POSHead implements ScopeFeature {
 					heads.add(n.mother.pos);
 					n = n.mother;
 				}
-				
+
 				for(int order : orders) {
 					int o = order;
 					if(order < 0) o = heads.size() - o;
@@ -57,5 +57,31 @@ public class POSHead implements ScopeFeature {
 		String s = "POS Head Orders: ";
 		for(int i : orders) s += i+",";
 		return s.substring(0, s.length()-1);
+	}
+
+	@Override
+	public List<List<String>> extractClassif(Sentence s, int cueIndex)
+	{		
+		try { s.ensureFinalized(); s.generateTree(); }catch(Exception e) { }
+
+			List<List<String>> sentence = new LinkedList<List<String>>();
+			for(Word w : s.words) {
+				ArrayList<String> heads = new ArrayList<String>();
+				List<String> features = new LinkedList<String>();
+				sentence.add(features);
+				Node n = w.node;
+				while(n.mother != null) {
+					heads.add(n.mother.pos);
+					n = n.mother;
+				}
+
+				for(int order : orders) {
+					int o = order;
+					if(order < 0) o = heads.size() - o;
+					o = Math.min(o, heads.size()-1);
+					features.add("order-" + order + "-head:" + heads.get(o));
+				}
+			}
+		return sentence;
 	}
 }

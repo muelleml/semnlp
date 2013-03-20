@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 
 import model.Corpus;
 import model.Metric;
+import util.Sysout;
 
 /**
  * @author muelleml
@@ -85,10 +86,10 @@ public class EvaluationReader {
 			tGold.delete();
 			tSys.delete();
 		} catch (IOException e) {
-			e.printStackTrace();
+			e.printStackTrace(Sysout.err);
 			System.out.println("Failed to create temp File.");
 		} catch (InterruptedException e) {
-			e.printStackTrace();
+			e.printStackTrace(Sysout.err);
 			System.out.println("Failed parsing eval data.");
 		}
 

@@ -6,6 +6,7 @@ import io.ConllWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.Date;
 
 import model.Corpus;
 import util.Sysout;
@@ -20,30 +21,13 @@ public class SingleFileValidator {
 	 */
 	public static void main(final String[] args) throws InterruptedException, IOException {
 		if(args.length >= 3) {
-			System.setErr(new PrintStream(new OutputStream()
-			{
-				
-				@Override
-				public void write(int b) throws IOException
-				{
-					// Do nothing so fucking bastard son of a bitch mallet crap wont spam
-				}
-			}));
-			Sysout.out = System.out;
-			System.setOut(new PrintStream(new OutputStream()
-			{
-				
-				@Override
-				public void write(int b) throws IOException
-				{
-					// Do nothing so fucking bastard son of a bitch mallet crap wont spam
-				}
-			}));
+			Sysout.init();
+			Date start = new Date();
 			
 			Corpus train = ConllReader.read(args[0]);
 			Corpus test = ConllReader.read(args[1]);
 			Classifier classif;
-			if(args.length ==6)
+			if(args.length == 6)
 				classif = new Classifier(args[3], args[4], args[5]);
 			else if(args.length ==5)
 				classif = new Classifier(args[3], args[4]);
@@ -52,13 +36,14 @@ public class SingleFileValidator {
 			else 
 				classif = new Classifier();
 			
-			Sysout.out.println(classif);
 			Sysout.out.println("Training");
 			classif.train(train);
+			train = null;
 			Sysout.out.println("Classification");
 			Corpus result = classif.classify(test);
 			Sysout.out.println("Done");
 			ConllWriter.write(result, args[2]);
+			Sysout.out.println("Finished. Took: " + new Date(start.getTime() - new Date().getTime()));
 		}
 		else {
 			Sysout.out.println("Usage:   SingleFileValidator train test output [Cue-Detector:{hybrid|gold}] [Scope-Detector:{CRF[iterations,reverted=1](featureSpec)|Gold|Baseline|Stacked[iterations,reverted=1]featureSpec=({crf|stacked}[iterations,reverted=1](featureSpec);...)}");

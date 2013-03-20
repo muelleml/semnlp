@@ -8,6 +8,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import model.Corpus;
+import util.Sysout;
 
 /**
  * @author muelleml
@@ -38,7 +39,7 @@ public class ConllWriter {
 			}
 		}
 		catch (IOException e) {
-			e.printStackTrace();
+			e.printStackTrace(Sysout.err);
 		}
 	}
 }

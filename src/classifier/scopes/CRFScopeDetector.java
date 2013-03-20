@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 
 import malletwrap.ClassifyMalletCRF;
 import malletwrap.TrainMalletCRF;
@@ -30,14 +31,14 @@ public class CRFScopeDetector implements ScopeClassifier {
 		scopeFeatureExtractor = new ScopeFeatureExtractor();
 		String[] specs = featureSpec.split("\\+");
 		for(String spec : specs) {
-			switch(spec.substring(0,6)) {
-			case "posseq": 
+			switch(spec.substring(0,3)) {
+			case "seq": 
 				scopeFeatureExtractor.addFeature(new POSSequence(Integer.parseInt(spec.substring(spec.indexOf('(')+1,spec.lastIndexOf(')')))));
 				break;
-			case "poshea":
+			case "hea":
 				scopeFeatureExtractor.addFeature(new POSHead(spec.substring(spec.indexOf('(')+1,spec.lastIndexOf(')'))));
 				break;
-			case "baseli":
+			case "bas":
 				scopeFeatureExtractor.addFeature(new Baseline());
 				break;
 			default:
@@ -65,25 +66,33 @@ public class CRFScopeDetector implements ScopeClassifier {
 			for(int cueIndex = 0; cueIndex<s.words.get(0).cues.size(); cueIndex++) {
 				List<String> cueLabels = new LinkedList<>();
 				labels.add(cueLabels);
-				
-				Iterator<Word> wordIt = s.words.listIterator(reverted?s.words.size():0);
-				while(wordIt.hasNext()) {
-					Word w = wordIt.next();
-					Cue cue = w.cues.get(cueIndex);
-						if(!cue.scope.equals("_")) 
-						{
-//							if(recentScope[cueIndex].equals("_")) {
-//								cueLabels.add("B");
-//							}
-//							else
-							{
-								cueLabels.add("I");
-							}
-						}
-						else cueLabels.add("O");
-
+				if(reverted) {
+					ListIterator<Word> wordIt = s.words.listIterator(s.words.size());
+					while(wordIt.hasPrevious()) {
+						Word w = wordIt.previous();
+						Cue cue = w.cues.get(cueIndex);
+						if(cue.scope.equals("_"))
+							cueLabels.add("O");
+						else if(recentScope[cueIndex].equals("_"))
+								cueLabels.add("B");
+						else cueLabels.add("I");
+						 
 						recentScope[cueIndex] = cue.scope;
-
+					}
+				}
+				else {
+					ListIterator<Word> wordIt = s.words.listIterator(0);
+					while(wordIt.hasNext()) {
+						Word w = wordIt.next();
+						Cue cue = w.cues.get(cueIndex);
+						if(cue.scope.equals("_"))
+							cueLabels.add("O");
+						else if(recentScope[cueIndex].equals("_"))
+								cueLabels.add("B");
+						else cueLabels.add("I");
+						 
+						recentScope[cueIndex] = cue.scope;
+					}
 				}
 			}
 
@@ -107,21 +116,32 @@ public class CRFScopeDetector implements ScopeClassifier {
 		for(int cueIndex = 0; cueIndex < sentence.words.get(0).cues.size(); cueIndex++) {
 
 			List<String> labels = getPredictedLabels(sentence, cueIndex);
-			Iterator<String> labelIt = labels.iterator();
-			
-			Iterator<Word> wordIt = sentence.words.listIterator(0);//(reverted?sentence.words.size():0);
-			while(wordIt.hasNext()) {
-				Word w = wordIt.next();
-			
-				if(labelIt.hasNext())  {
-					String label = labelIt.next();
-
-					if(label.equals("B") || label.equals("I")) {
-						w.cues.get(cueIndex).scope = w.lemma;
+			ListIterator<String> labelIt = labels.listIterator();
+			if(reverted) {
+				ListIterator<Word> wordIt = sentence.words.listIterator(sentence.words.size());
+				while(wordIt.hasPrevious()) {
+					Word w = wordIt.previous();
+					if(labelIt.hasPrevious())  {
+						String label = labelIt.previous();
+						if(label.equals("B") || label.equals("I")) {
+							w.cues.get(cueIndex).scope = w.word;
+						}
 					}
-
+					else break;
 				}
-				else break;
+			}
+			else {
+				ListIterator<Word> wordIt = sentence.words.listIterator(0);
+				while(wordIt.hasNext()) {
+					Word w = wordIt.next();
+					if(labelIt.hasNext())  {
+						String label = labelIt.next();
+						if(label.equals("B") || label.equals("I")) {
+							w.cues.get(cueIndex).scope = w.word;
+						}
+					}
+					else break;
+				}
 			}
 		}
 	}

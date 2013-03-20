@@ -7,8 +7,11 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+
+import util.Sysout;
 
 import model.Corpus;
 import model.Cue;
@@ -75,10 +78,11 @@ public class ConllReader {
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			e.printStackTrace(Sysout.err);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			e.printStackTrace(Sysout.err);
 		}
 
 		// remove empty sentences
