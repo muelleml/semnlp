@@ -23,7 +23,7 @@ import model.Word;
  * 
  */
 public class ConllReader {
-	public static Corpus read(String fileName) {
+	public static Corpus read(String fileName) throws IOException {
 
 		Corpus c = new Corpus();
 
@@ -76,10 +76,6 @@ public class ConllReader {
 			br.close();
 			fr.close();
 
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			
-			e.printStackTrace(Sysout.err);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace(Sysout.err);
