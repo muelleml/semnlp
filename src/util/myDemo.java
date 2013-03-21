@@ -14,9 +14,9 @@ public class myDemo {
 	public static void main(String[] args) {
 		try {
 			Classifier cl = new Classifier();
-			model.Corpus c = ConllReader.read("starsem-st-2012-data/extra/only_affix_cues/training-set-only-affix-cues.txt");
-			cl.train(c);
-			Demo.DoDemo(cl);
+			//model.Corpus c = ConllReader.read("starsem-st-2012-data/extra/only_affix_cues/training-set-only-affix-cues.txt");
+			//cl.train(c);
+			ThreadedDemo.DoDemo(cl);
 			
 			/*
 			String devTrainSourceOnlyAffixes = "starsem-st-2012-data/extra/only_affix_cues/training-set-only-affix-cues.txt";
