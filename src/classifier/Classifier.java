@@ -26,9 +26,9 @@ public class Classifier {
 
 	public Classifier() {
 		cueClassif = new HybridCueDetector();
-		//scopeClassif = new CRFScopeDetector("poshead(1,2,3,4,5)+baseline+posseq(10)", 150, false);
+		scopeClassif = new CRFScopeDetector("poshead(1,2,3,4,5)+baseline+posseq(10)", 150, false);
 		
-		scopeClassif = new BaselineScopeDetector();
+		//scopeClassif = new BaselineScopeDetector();
 	}
 
 	public Classifier(CueClassifier cueClassif, ScopeClassifier scopeClassif) {

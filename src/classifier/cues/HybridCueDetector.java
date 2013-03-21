@@ -51,12 +51,21 @@ public class HybridCueDetector implements CueClassifier {
 		cueFeatureExtractor.addFeature(new POS(0));
 		cueFeatureExtractor.addFeature(new POS(-1));
 		cueFeatureExtractor.addFeature(new POS(-2));
+		cueFeatureExtractor.addFeature(new POS(-3));
 		cueFeatureExtractor.addFeature(new POS(1));
 		cueFeatureExtractor.addFeature(new POS(2));
-		cueFeatureExtractor.addFeature(new Lemma());
-		cueFeatureExtractor.addFeature(new NGram(1, 3, 6, true));
-		cueFeatureExtractor.addFeature(new NGram(1, 3, 6, false));
-		cueFeatureExtractor.addFeature(new Path(2));
+		cueFeatureExtractor.addFeature(new POS(3));
+		cueFeatureExtractor.addFeature(new Lemma(-3));
+		cueFeatureExtractor.addFeature(new Lemma(-2));
+		cueFeatureExtractor.addFeature(new Lemma(-1));
+		cueFeatureExtractor.addFeature(new Lemma(0));
+		cueFeatureExtractor.addFeature(new Lemma(1));
+		//cueFeatureExtractor.addFeature(new Lemma(2));
+		//cueFeatureExtractor.addFeature(new Lemma(3));
+		
+		cueFeatureExtractor.addFeature(new NGram(1, 3, 10, true));
+		cueFeatureExtractor.addFeature(new NGram(1, 3, 10, false));
+		cueFeatureExtractor.addFeature(new Path(3));
 
 		shortAffixes.addAll(Arrays.asList("dis", "im", "in", "ir", "un"));
 		longAffixes.addAll(Arrays.asList("less"));
@@ -103,16 +112,16 @@ public class HybridCueDetector implements CueClassifier {
 					// experiment! also in classifyWord
 					if (cue.cue.equals(w.word)) {
 						lu.add(cue.cue.toLowerCase());
+						cueDetector.addTrainingInstance(nonAffixCue,
+								cueFeatureExtractor.extract(w, s));
 					} else if (shortAffixes.contains(cue.cue)) {
 						affixCues.add(cue.cue);
 						cueDetector.addTrainingInstance(shortAffixCue,
 								cueFeatureExtractor.extract(w, s));
-						System.out.println(w.toString());
 					} else if (longAffixes.contains(cue.cue)) {
 						affixCues.add(cue.cue);
 						cueDetector.addTrainingInstance(longAffixCue,
 								cueFeatureExtractor.extract(w, s));
-						System.out.println(w.toString());
 					}
 
 					else {

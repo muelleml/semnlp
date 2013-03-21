@@ -15,8 +15,14 @@ import model.Word;
  */
 public class Lemma implements CueFeature {
 
+	int pos;
+
 	public Lemma() {
-		// TODO Auto-generated constructor stub
+		pos = 0;
+	}
+
+	public Lemma(int pos) {
+		this.pos = pos;
 	}
 
 	/*
@@ -26,9 +32,21 @@ public class Lemma implements CueFeature {
 	 */
 	@Override
 	public List<String> extract(Word w, Sentence s) {
+
+		Word tWord = new Word();
+		tWord.lemma = "";
+		
+		int rel = s.words.indexOf(w);
+		if (rel != -1) {
+			if (rel + pos >= 0 && rel + pos <= s.words.size() - 1) {
+				tWord = s.words.get(rel+pos);
+			}
+
+		}
+		
+
 		List<String> r = new LinkedList<String>();
-		r.add("Lemma:" + w.lemma);
+		r.add("Lemma"+Integer.toString(pos)+":" + tWord.lemma);
 		return r;
 	}
-
 }

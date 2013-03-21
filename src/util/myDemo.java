@@ -33,8 +33,9 @@ public class myDemo {
 
 			Metric devOnlyAffixes = EvaluationReader.readScope(devGoldOnlyAffixes,
 					devSysOnlyAffixes);
-					*/
-			
+					System.out.println(devOnlyAffixes.toString());
+					
+			*/
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

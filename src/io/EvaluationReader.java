@@ -82,8 +82,8 @@ public class EvaluationReader {
 				}
 			}
 
-			//tGold.delete();
-			//tSys.delete();
+			tGold.delete();
+			tSys.delete();
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.out.println("Failed to create temp File.");
