@@ -33,28 +33,14 @@ public class CrossValidator
 
 				@Override
 				public void run() {
-					try {
-						Classifier classifier = new Classifier();
-						Corpus train = new Corpus();
-						for(int i=0; i<corpi.length; i++) {
-							if(i!=run)
-								train.addCorpus(corpi[i]);
-						}
-						classifier.train(train);
-						result[run+1] = classifier.classify(corpi[run]);
+					Classifier classifier = new Classifier();
+					Corpus train = new Corpus();
+					for(int i=0; i<corpi.length; i++) {
+						if(i!=run)
+							train.addCorpus(corpi[i]);
 					}
-					catch(InterruptedException e) {
-						e.printStackTrace();
-					}
-					//					for(Sentence s : result[run+1].sentences) {
-					//						for(Word w : s.words){ 
-					//							for(Cue c : w.cues){
-					//								if(c.scope != "_") {
-					//									c.toString();
-					//								}
-					//							}
-					//						}
-					//					}
+					classifier.train(train);
+					result[run+1] = classifier.classify(corpi[run]);
 
 					mutex.release();
 				}

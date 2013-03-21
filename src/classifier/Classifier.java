@@ -18,17 +18,45 @@ import classifier.scopes.StackedScopeDetector;
  * @author muelleml,eckebrpk
  * 
  */
-public class Classifier {
+public class Classifier implements Runnable {
+
 	Corpus classif;
+
+	// for threading
+	Corpus classify;
+	Corpus train;
+	Corpus result;
+
+	public Corpus getResult() {
+		return result;
+	}
 
 	CueClassifier cueClassif;
 	ScopeClassifier scopeClassif;
 
 	public Classifier() {
 		cueClassif = new HybridCueDetector();
-		scopeClassif = new CRFScopeDetector("poshead(1,2,3,4,5)+baseline+posseq(10)", 150, false);
-		
-		//scopeClassif = new BaselineScopeDetector();
+		scopeClassif = new CRFScopeDetector(
+				"poshead(1,2,3,4,5)+baseline+posseq(10)", 150, false);
+
+		// scopeClassif = new BaselineScopeDetector();
+	}
+
+	/**
+	 * Use this constructor for Multithreading
+	 * 
+	 * @param train
+	 * @param classify
+	 */
+	public Classifier(Corpus train, Corpus classify) {
+
+		this.train = train;
+		this.classify = classify;
+
+		cueClassif = new HybridCueDetector();
+		scopeClassif = new CRFScopeDetector(
+				"poshead(1,2,3,4,5)+baseline+posseq(10)", 150, false);
+
 	}
 
 	public Classifier(CueClassifier cueClassif, ScopeClassifier scopeClassif) {
@@ -121,22 +149,29 @@ public class Classifier {
 		scopeClassif.train(c);
 	}
 
-	public Corpus classify(Corpus c) throws InterruptedException {
+	public Corpus classify(Corpus c) {
 		classif = new Corpus();
 
 		for (Sentence s : c.sentences) {
 			classif.sentences.add(classify(s));
 		}
 
+		result = classif;
+
 		return classif;
 
 	}
 
-	public Sentence classify(Sentence sentence) throws InterruptedException {
+	public Sentence classify(Sentence sentence) {
 		cueClassif.classify(sentence);
 
-		sentence.ensureFinalized();
-		sentence.generateTree();
+		try {
+			sentence.ensureFinalized();
+			sentence.generateTree();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		scopeClassif.classify(sentence);
 
@@ -147,6 +182,14 @@ public class Classifier {
 	public String toString() {
 		return "Classifier Using:\nCue: " + cueClassif + "\nScope:\n"
 				+ scopeClassif;
+
+	}
+
+	@Override
+	public void run() {
+
+		train(train);
+		result = classify(classify);
 
 	}
 }
