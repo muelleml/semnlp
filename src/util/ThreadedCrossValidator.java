@@ -15,6 +15,7 @@ import model.Metrics;
 import model.Sentence;
 import model.Word;
 import classifier.Classifier;
+import classifier.StandardClassifier;
 
 public class ThreadedCrossValidator {
 
@@ -33,7 +34,7 @@ public class ThreadedCrossValidator {
 			Classifier classifier) throws InterruptedException {
 		Metrics r = new Metrics();
 		
-		List<Classifier> clList = new LinkedList<Classifier>();
+		List<StandardClassifier> clList = new LinkedList<StandardClassifier>();
 
 		// including virtual processors eg on Intel
 		int nrCores = Runtime.getRuntime().availableProcessors();
@@ -73,9 +74,9 @@ public class ThreadedCrossValidator {
 				}
 			}
 
-			Runnable myCl = new Classifier(train, test);
+			Runnable myCl = new StandardClassifier(train, test);
 			
-			clList.add((Classifier) myCl);
+			clList.add((StandardClassifier) myCl);
 
 			System.out.println("Starting a Thread with: "
 					+ classifier.getClass().getName());
@@ -95,8 +96,6 @@ public class ThreadedCrossValidator {
 		for (Classifier c : clList){
 			test = tGold[i];
 			Corpus sys = c.getResult();
-			
-			System.out.println(sys.toString());
 			
 			for (Sentence s : sys.sentences) {
 				microAverage.sentences.add(s);

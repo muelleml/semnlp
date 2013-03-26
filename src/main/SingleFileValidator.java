@@ -10,6 +10,7 @@ import java.io.PrintStream;
 import model.Corpus;
 import util.Sysout;
 import classifier.Classifier;
+import classifier.StandardClassifier;
 
 public class SingleFileValidator {
 
@@ -44,13 +45,13 @@ public class SingleFileValidator {
 			Corpus test = ConllReader.read(args[1]);
 			Classifier classif;
 			if(args.length ==6)
-				classif = new Classifier(args[3], args[4], args[5]);
+				classif = new StandardClassifier(args[3], args[4], args[5]);
 			else if(args.length ==5)
-				classif = new Classifier(args[3], args[4]);
+				classif = new StandardClassifier(args[3], args[4]);
 			else if(args.length == 4)
-				classif = new Classifier(args[3]);
+				classif = new StandardClassifier(args[3]);
 			else 
-				classif = new Classifier();
+				classif = new StandardClassifier();
 			
 			Sysout.out.println(classif);
 			Sysout.out.println("Training");

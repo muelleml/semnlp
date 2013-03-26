@@ -7,6 +7,7 @@ import java.util.concurrent.Semaphore;
 
 import model.Corpus;
 import classifier.Classifier;
+import classifier.StandardClassifier;
 
 public class CrossValidator
 {
@@ -33,7 +34,7 @@ public class CrossValidator
 
 				@Override
 				public void run() {
-					Classifier classifier = new Classifier();
+					Classifier classifier = new StandardClassifier();
 					Corpus train = new Corpus();
 					for(int i=0; i<corpi.length; i++) {
 						if(i!=run)

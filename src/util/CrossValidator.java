@@ -83,7 +83,6 @@ public class CrossValidator {
 				microAverage.sentences.add(s);
 			}
 
-			System.out.println(m.toString());
 
 		}
 

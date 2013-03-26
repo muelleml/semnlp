@@ -5,6 +5,7 @@ import model.Metric;
 import io.ConllReader;
 import io.EvaluationReader;
 import classifier.Classifier;
+import classifier.StandardClassifier;
 
 public class myDemo {
 
@@ -13,7 +14,7 @@ public class myDemo {
 	 */
 	public static void main(String[] args) {
 		try {
-			Classifier cl = new Classifier();
+			Classifier cl = new StandardClassifier();
 			//model.Corpus c = ConllReader.read("starsem-st-2012-data/extra/only_affix_cues/training-set-only-affix-cues.txt");
 			//cl.train(c);
 			ThreadedDemo.DoDemo(cl);

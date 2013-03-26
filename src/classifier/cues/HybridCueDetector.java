@@ -60,9 +60,9 @@ public class HybridCueDetector implements CueClassifier {
 		cueFeatureExtractor.addFeature(new Lemma(-1));
 		cueFeatureExtractor.addFeature(new Lemma(0));
 		cueFeatureExtractor.addFeature(new Lemma(1));
-		//cueFeatureExtractor.addFeature(new Lemma(2));
-		//cueFeatureExtractor.addFeature(new Lemma(3));
-		
+		// cueFeatureExtractor.addFeature(new Lemma(2));
+		// cueFeatureExtractor.addFeature(new Lemma(3));
+
 		cueFeatureExtractor.addFeature(new NGram(1, 3, 10, true));
 		cueFeatureExtractor.addFeature(new NGram(1, 3, 10, false));
 		cueFeatureExtractor.addFeature(new Path(3));
@@ -133,7 +133,6 @@ public class HybridCueDetector implements CueClassifier {
 			}
 		}
 		cueClassifier = new ClassifyMalletMaxEnt(cueDetector.train());
-		System.out.println(affixCues.toString());
 	}
 
 	@Override
@@ -155,7 +154,7 @@ public class HybridCueDetector implements CueClassifier {
 						.extract(word, sentence));
 
 				if (c.equals(nonAffixCue)) {
-					//cu = new Cue("_", "_", "_");
+					// cu = new Cue("_", "_", "_");
 					/*
 					 * if (word.word.endsWith("less") |
 					 * word.word.endsWith("lessly")) { cu = new Cue("less", "_",
