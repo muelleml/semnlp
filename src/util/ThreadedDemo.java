@@ -13,18 +13,18 @@ public class ThreadedDemo {
 		Metrics crossOnlyAffixes;
 
 		cross = ThreadedCrossValidator.CrossValidate(partitions, classifier);
-		crossOnlyAffixes = ThreadedCrossValidator.CrossValidate(partitionsOnlyAffixes,
-				classifier);
+		//crossOnlyAffixes = ThreadedCrossValidator.CrossValidate(partitionsOnlyAffixes,classifier);
 		
 		System.out.println();
 		System.out.println("Metrics for CrossValidation on devSet with: " + classifier.getClass().getSimpleName());
 		System.out.println(cross.toString());
 		System.out.println();
 		
+		/*
 		System.out.println("Metrics for CrossValidation on OnlyAffixes with: " + classifier.getClass().getSimpleName());
 		System.out.println(crossOnlyAffixes.toString());
 		System.out.println();
-		
+		*/
 		
 		/*
 		System.out.println("Metrics for normal run on devSet with: " + classifier.getClass().getSimpleName());

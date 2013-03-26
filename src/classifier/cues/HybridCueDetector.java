@@ -50,22 +50,22 @@ public class HybridCueDetector implements CueClassifier {
 		cueFeatureExtractor = new CueFeatureExtractor();
 		cueFeatureExtractor.addFeature(new POS(0));
 		cueFeatureExtractor.addFeature(new POS(-1));
-		cueFeatureExtractor.addFeature(new POS(-2));
-		cueFeatureExtractor.addFeature(new POS(-3));
+		//cueFeatureExtractor.addFeature(new POS(-2));
+		//cueFeatureExtractor.addFeature(new POS(-3));
 		cueFeatureExtractor.addFeature(new POS(1));
-		cueFeatureExtractor.addFeature(new POS(2));
-		cueFeatureExtractor.addFeature(new POS(3));
-		cueFeatureExtractor.addFeature(new Lemma(-3));
-		cueFeatureExtractor.addFeature(new Lemma(-2));
-		cueFeatureExtractor.addFeature(new Lemma(-1));
+		//cueFeatureExtractor.addFeature(new POS(2));
+		//cueFeatureExtractor.addFeature(new POS(3));
+		//cueFeatureExtractor.addFeature(new Lemma(-3));
+		//cueFeatureExtractor.addFeature(new Lemma(-2));
+		//cueFeatureExtractor.addFeature(new Lemma(-1));
 		cueFeatureExtractor.addFeature(new Lemma(0));
 		cueFeatureExtractor.addFeature(new Lemma(1));
 		// cueFeatureExtractor.addFeature(new Lemma(2));
 		// cueFeatureExtractor.addFeature(new Lemma(3));
 
-		cueFeatureExtractor.addFeature(new NGram(1, 3, 10, true));
-		cueFeatureExtractor.addFeature(new NGram(1, 3, 10, false));
-		cueFeatureExtractor.addFeature(new Path(3));
+		//cueFeatureExtractor.addFeature(new NGram(1, 3, 10, true));
+		//cueFeatureExtractor.addFeature(new NGram(1, 3, 10, false));
+		//cueFeatureExtractor.addFeature(new Path(3));
 
 		shortAffixes.addAll(Arrays.asList("dis", "im", "in", "ir", "un"));
 		longAffixes.addAll(Arrays.asList("less"));

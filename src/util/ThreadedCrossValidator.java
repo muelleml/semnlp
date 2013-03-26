@@ -1,5 +1,6 @@
 package util;
 
+import io.ConllWriter;
 import io.EvaluationReader;
 import io.PartitionReader;
 
@@ -116,10 +117,15 @@ public class ThreadedCrossValidator {
 				gold.sentences.add(s);
 			}
 		}
+		
 
 		Metric m = EvaluationReader.readScope(gold, microAverage);
 		r.addMicroAverage(m);
 
+		Corpus aligned = JackKnifeAligner.align(microAverage, gold);
+		ConllWriter.write(aligned, "testOutput/aligned.txt");
+		ConllWriter.write(microAverage, "testOutput/gold.txt");
+		
 		return r;
 	}
 }
