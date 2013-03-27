@@ -117,7 +117,7 @@ public class CRFScopeDetector implements ScopeClassifier {
 					String label = labelIt.next();
 
 					if(label.equals("B") || label.equals("I")) {
-						w.cues.get(cueIndex).scope = w.lemma;
+						w.cues.get(cueIndex).scope = w.word;
 					}
 
 				}

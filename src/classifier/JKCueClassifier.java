@@ -154,7 +154,6 @@ public class JKCueClassifier implements Runnable, Classifier {
 	@Override
 	public void train(Corpus c) {
 		cueClassif.train(c);
-		scopeClassif.train(c);
 	}
 
 	/* (non-Javadoc)
@@ -188,8 +187,6 @@ public class JKCueClassifier implements Runnable, Classifier {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-		scopeClassif.classify(sentence);
 
 		return sentence;
 	}

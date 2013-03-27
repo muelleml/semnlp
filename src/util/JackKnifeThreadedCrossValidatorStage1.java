@@ -16,9 +16,10 @@ import model.Metrics;
 import model.Sentence;
 import model.Word;
 import classifier.Classifier;
+import classifier.JKCueClassifier;
 import classifier.StandardClassifier;
 
-public class ThreadedCrossValidator {
+public class JackKnifeThreadedCrossValidatorStage1 {
 
 	/**
 	 * Does CrossValidation.
@@ -35,7 +36,7 @@ public class ThreadedCrossValidator {
 			Classifier classifier) throws InterruptedException {
 		Metrics r = new Metrics();
 		
-		List<StandardClassifier> clList = new LinkedList<StandardClassifier>();
+		List<Classifier> clList = new LinkedList<Classifier>();
 
 		// including virtual processors eg on Intel
 		int nrCores = Runtime.getRuntime().availableProcessors();
@@ -75,9 +76,9 @@ public class ThreadedCrossValidator {
 				}
 			}
 
-			Runnable myCl = new StandardClassifier(train, test);
+			Runnable myCl = new JKCueClassifier(train, test);
 			
-			clList.add((StandardClassifier) myCl);
+			clList.add((Classifier) myCl);
 
 			System.out.println("Starting a Thread with: "
 					+ classifier.getClass().getName());
@@ -119,13 +120,29 @@ public class ThreadedCrossValidator {
 		}
 		
 
+		
+
 		Metric m = EvaluationReader.readScope(gold, microAverage);
 		r.addMicroAverage(m);
 
 		Corpus aligned = JackKnifeAligner.align(microAverage, gold);
-		ConllWriter.write(aligned, "testOutput/aligned.txt");
-		ConllWriter.write(microAverage, "testOutput/microaverage.txt");
-		ConllWriter.write(gold, "testOutput/gold.txt");
+		
+		int sCount = 0;
+		
+		int corpCount = 0;
+		
+		for (Classifier c : clList){
+			Corpus rCorp = c.getResult();
+			int tCount = rCorp.sentences.size()-1;
+			Corpus tCorp = new Corpus();
+			tCorp.sentences.addAll(gold.sentences.subList(sCount, sCount+tCount));
+			
+			ConllWriter.write(tCorp, "jackKnifePartionsS1/p"+Integer.toString(corpCount)+".txt");
+			
+			corpCount++;
+			
+			sCount += tCount;
+		}
 		
 		return r;
 	}

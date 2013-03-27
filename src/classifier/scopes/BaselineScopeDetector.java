@@ -50,7 +50,7 @@ public class BaselineScopeDetector implements ScopeClassifier
 				Node currentCue = S.findChild(new CueChildSelector(cueIndex));
 				if(currentCue != null && currentCue.word != w)
 				{
-					c.scope = w.lemma;
+					c.scope = w.word;
 				}
 				cueIndex++;
 			}

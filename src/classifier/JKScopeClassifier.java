@@ -3,7 +3,10 @@
  */
 package classifier;
 
+import java.util.List;
+
 import model.Corpus;
+import model.Cue;
 import model.Sentence;
 import util.Sysout;
 import classifier.cues.CueClassifier;
@@ -27,7 +30,9 @@ public class JKScopeClassifier implements Runnable, Classifier {
 	Corpus train;
 	Corpus result;
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see classifier.Classifier#getResult()
 	 */
 	@Override
@@ -63,7 +68,8 @@ public class JKScopeClassifier implements Runnable, Classifier {
 
 	}
 
-	public JKScopeClassifier(CueClassifier cueClassif, ScopeClassifier scopeClassif) {
+	public JKScopeClassifier(CueClassifier cueClassif,
+			ScopeClassifier scopeClassif) {
 		this.cueClassif = cueClassif;
 		this.scopeClassif = scopeClassif;
 	}
@@ -148,16 +154,19 @@ public class JKScopeClassifier implements Runnable, Classifier {
 		}
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see classifier.Classifier#train(model.Corpus)
 	 */
 	@Override
 	public void train(Corpus c) {
-		cueClassif.train(c);
 		scopeClassif.train(c);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see classifier.Classifier#classify(model.Corpus)
 	 */
 	@Override
@@ -165,6 +174,7 @@ public class JKScopeClassifier implements Runnable, Classifier {
 		classif = new Corpus();
 
 		for (Sentence s : c.sentences) {
+			
 			classif.sentences.add(classify(s));
 		}
 
@@ -174,13 +184,13 @@ public class JKScopeClassifier implements Runnable, Classifier {
 
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see classifier.Classifier#classify(model.Sentence)
 	 */
 	@Override
 	public Sentence classify(Sentence sentence) {
-		cueClassif.classify(sentence);
-
 		try {
 			sentence.ensureFinalized();
 			sentence.generateTree();
@@ -188,13 +198,22 @@ public class JKScopeClassifier implements Runnable, Classifier {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		for (List<Cue> cl :sentence.verticalCues){
+			for (Cue cu :cl){
+				cu.event = "_";
+				cu.scope = "_";
+			}
+		}
 
 		scopeClassif.classify(sentence);
 
 		return sentence;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see classifier.Classifier#toString()
 	 */
 	@Override

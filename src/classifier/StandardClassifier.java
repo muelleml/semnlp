@@ -40,8 +40,8 @@ public class StandardClassifier implements Runnable, Classifier {
 
 	public StandardClassifier() {
 		cueClassif = new HybridCueDetector();
-		//scopeClassif = new CRFScopeDetector("poshead(1,2,3,4,5)+baseline+posseq(10)", 150, false);
-		scopeClassif = new CRFScopeDetector("poshead(1)+baseline+posseq(2)", 10, false);
+		scopeClassif = new CRFScopeDetector("poshead(1,2,3,4,5)+baseline+posseq(10)", 150, false);
+		//scopeClassif = new CRFScopeDetector("poshead(1)+baseline+posseq(2)", 10, false);
 
 		// scopeClassif = new BaselineScopeDetector();
 	}
@@ -58,8 +58,7 @@ public class StandardClassifier implements Runnable, Classifier {
 		this.classify = classify;
 
 		cueClassif = new HybridCueDetector();
-		scopeClassif = new CRFScopeDetector(
-				"poshead(1,2,3,4,5)+baseline+posseq(10)", 150, false);
+		scopeClassif = new CRFScopeDetector("poshead(1,2,3,4,5)+baseline+posseq(10)", 150, false);
 
 	}
 

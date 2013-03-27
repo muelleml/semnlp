@@ -16,9 +16,10 @@ import model.Metrics;
 import model.Sentence;
 import model.Word;
 import classifier.Classifier;
+import classifier.JKScopeClassifier;
 import classifier.StandardClassifier;
 
-public class ThreadedCrossValidator {
+public class JackKnifeThreadedCrossValidatorStage2 {
 
 	/**
 	 * Does CrossValidation.
@@ -35,7 +36,9 @@ public class ThreadedCrossValidator {
 			Classifier classifier) throws InterruptedException {
 		Metrics r = new Metrics();
 		
-		List<StandardClassifier> clList = new LinkedList<StandardClassifier>();
+		String jkPartitions = "jackKnifePartionsS1";
+		
+		List<Classifier> clList = new LinkedList<Classifier>();
 
 		// including virtual processors eg on Intel
 		int nrCores = Runtime.getRuntime().availableProcessors();
@@ -75,9 +78,9 @@ public class ThreadedCrossValidator {
 				}
 			}
 
-			Runnable myCl = new StandardClassifier(train, test);
+			Runnable myCl = new JKScopeClassifier(train, test);
 			
-			clList.add((StandardClassifier) myCl);
+			clList.add((Classifier) myCl);
 
 			System.out.println("Starting a Thread with: "
 					+ classifier.getClass().getName());
@@ -122,10 +125,6 @@ public class ThreadedCrossValidator {
 		Metric m = EvaluationReader.readScope(gold, microAverage);
 		r.addMicroAverage(m);
 
-		Corpus aligned = JackKnifeAligner.align(microAverage, gold);
-		ConllWriter.write(aligned, "testOutput/aligned.txt");
-		ConllWriter.write(microAverage, "testOutput/microaverage.txt");
-		ConllWriter.write(gold, "testOutput/gold.txt");
 		
 		return r;
 	}
